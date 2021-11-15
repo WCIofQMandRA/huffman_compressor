@@ -5,6 +5,7 @@
 #pragma once
 #include <cstdint>
 #include <iosfwd>
+#include <string>
 #ifdef HMCMPSR_DLLEXPORT
 #   define HMCMPSR_API __declspec(__dllexport__)
 #else
@@ -38,7 +39,7 @@ class HMCMPSR_API ogenbitstream_n2:public ogenbitstream_base
 {
 public:
     //radix: 流的进制，n叉Huffman数要求radix=n
-    //2<=n<=255
+    //2<=n<=256
     ogenbitstream_n2(unsigned radix);
     ~ogenbitstream_n2()noexcept;
     //写入1bit信息
@@ -57,7 +58,7 @@ class HMCMPSR_API igenbitstream_n2:public igenbitstream_base
 public:
     igenbitstream_n2(unsigned radix);
     ~igenbitstream_n2()noexcept;
-    operator bool();
+    operator bool()override;
     //读取1bit信息
     unsigned getbit()override;
     //从is加载流
@@ -66,6 +67,44 @@ private:
     const unsigned m_radix;
     size_t m_length=0;
     void *m_buffer;
+};
+
+//radix是2^n
+class HMCMPSR_API ogenbitstream_2:public ogenbitstream_base
+{
+public:
+    //radix: 流的进制，n叉Huffman数要求radix=n
+    //2<=n<=255
+    ogenbitstream_2(unsigned radix);
+    //写入1bit信息
+    void putbit(unsigned bit)override;
+    //将缓冲区的内容全部写入os
+    void save(std::ostream &os)override;
+private:
+    const unsigned m_radix,log2_radix;
+    size_t m_length=0;
+    std::basic_string<unsigned char> m_buffer;
+    unsigned char last_char=0;
+    unsigned n_bits_left=0;
+};
+
+//radix是2^n
+class HMCMPSR_API igenbitstream_2:public igenbitstream_base
+{
+public:
+    igenbitstream_2(unsigned radix);
+    operator bool()override;
+    //读取1bit信息
+    unsigned getbit()override;
+    //从is加载流
+    void load(std::istream &is)override;
+private:
+    const unsigned m_radix,log2_radix;
+    size_t m_length=0;
+    std::basic_string<unsigned char> m_buffer;
+    unsigned char first_char=0;
+    unsigned n_bits_left=0;
+    std::basic_string<unsigned char>::iterator input_iterator;
 };
 
 }

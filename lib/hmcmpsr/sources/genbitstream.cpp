@@ -45,6 +45,17 @@ IntType ched(IntType x)
 template<typename IntType>
 IntType ched(IntType x){return x;}
 #endif
+
+//因为2<=x<=256，所以从2^8开始判断。
+constexpr unsigned log_2(unsigned x)
+{
+    unsigned y=0;
+    if(x>=256)y+=4,x>>=8;
+    if(x>=16)y+=4,x>>=4;
+    if(x>=4)y+=2,x>>=2;
+    if(x>=2)y+=1;
+    return y;
+}
 }
 
 #define M_BUFFER reinterpret_cast<__mpz_struct*>(m_buffer)
@@ -53,8 +64,8 @@ namespace hmcmpsr
 {
 ogenbitstream_n2::ogenbitstream_n2(unsigned radix):m_radix(radix)
 {
-    if(radix>=256)
-        throw std::out_of_range("In hmcpsr::genobitstream_n2::genobitstream_n2, the radix is greater than 255.");
+    if(radix>256)
+        throw std::out_of_range("In hmcpsr::genobitstream_n2::genobitstream_n2, the radix is greater than 256.");
     m_buffer=new __mpz_struct;
     mpz_init_set_si(M_BUFFER,0);
 }
@@ -106,8 +117,8 @@ void ogenbitstream_n2::save(std::ostream &os)
 
 igenbitstream_n2::igenbitstream_n2(unsigned radix):m_radix(radix)
 {
-    if(radix>=256)
-        throw std::out_of_range("In hmcpsr::igenbitstream_n2::igenbitstream_n2, the radix is greater than 255.");
+    if(radix>256)
+        throw std::out_of_range("In hmcpsr::igenbitstream_n2::igenbitstream_n2, the radix is greater than 256.");
     m_buffer=new __mpz_struct;
     mpz_init(M_BUFFER);
 }
@@ -169,5 +180,96 @@ void igenbitstream_n2::load(std::istream &is)
 igenbitstream_n2::operator bool()
 {
     return m_length!=0;
+}
+
+ogenbitstream_2::ogenbitstream_2(unsigned radix):m_radix(radix),log2_radix(log_2(radix))
+{
+    if(radix!=(radix&-radix))
+        throw std::out_of_range("hmcpsr::genobitstream_2::genobitstream_2, radix is not 2^n.");
+    if(radix>256)
+        throw std::out_of_range("In hmcpsr::genobitstream_2::genobitstream_2, the radix is greater than 256.");
+}
+
+void ogenbitstream_2::putbit(unsigned bit)
+{
+    if(bit>=m_radix)
+        throw std::out_of_range("In hmcpsr::ogenbitstream_2::putbit, bit[which is"
+        +std::to_string(bit)+"] >= m_radix[which is "+std::to_string(m_radix)+"].");
+
+    if(n_bits_left+log2_radix<=8)
+    {
+        last_char|=static_cast<uint8_t>(bit<<n_bits_left);
+        n_bits_left+=log2_radix;
+    }
+    else
+    {
+        last_char|=static_cast<uint8_t>(bit<<n_bits_left);
+        m_buffer+=last_char;
+        last_char=static_cast<uint8_t>(bit>>(8-n_bits_left));
+        n_bits_left=(n_bits_left+log2_radix)-8;
+    }
+    ++m_length;
+}
+
+void ogenbitstream_2::save(std::ostream &os)
+{
+    if(n_bits_left)
+        m_buffer+=last_char;
+    uint32_t compressed_genbits=ched(static_cast<uint32_t>(m_length));
+    uint32_t compressed_bytes=ched(static_cast<uint32_t>(m_buffer.length()));
+    os.write(reinterpret_cast<char*>(&compressed_genbits),4);
+    os.write(reinterpret_cast<char*>(&compressed_bytes),4);
+    os.write(reinterpret_cast<char*>(m_buffer.data()),m_buffer.size());
+    m_buffer.clear();
+    m_length=0,last_char=0,n_bits_left=0;
+}
+
+igenbitstream_2::igenbitstream_2(unsigned radix):m_radix(radix),log2_radix(log_2(radix))
+{
+    if(radix!=(radix&-radix))
+        throw std::out_of_range("hmcpsr::igenbitstream_2::igenbitstream_2, radix is not 2^n.");
+    if(radix>256)
+        throw std::out_of_range("In hmcpsr::igenbitstream_2::igenbitstream_2, the radix is greater than 256.");
+}
+
+igenbitstream_2::operator bool()
+{
+    return m_length!=0;
+}
+
+unsigned igenbitstream_2::getbit()
+{
+    if(m_length==0)return GENBITSTREAM_EOF;
+    if(n_bits_left>=log2_radix)
+    {
+        unsigned x=first_char&(m_radix-1u);
+        first_char>>=log2_radix;
+        n_bits_left-=log2_radix;
+        --m_length;
+        return x;
+    }
+    else
+    {
+        unsigned x=first_char;
+        first_char=input_iterator==m_buffer.end()?0u:*input_iterator++;
+        x|=first_char<<n_bits_left;
+        first_char>>=log2_radix-n_bits_left;
+        n_bits_left=8u-log2_radix+n_bits_left;
+        --m_length;
+        return x&=m_radix-1u;
+    }
+}
+
+void igenbitstream_2::load(std::istream &is)
+{
+    unsigned compressed_genbits,compressed_bytes;
+    is.read(reinterpret_cast<char*>(&compressed_genbits),4);
+    is.read(reinterpret_cast<char*>(&compressed_bytes),4);
+    m_length=ched(compressed_genbits);
+    compressed_bytes=ched(compressed_bytes);
+    m_buffer.resize(compressed_bytes);
+    is.read(reinterpret_cast<char*>(m_buffer.data()),m_buffer.size());
+    input_iterator=m_buffer.begin();
+    first_char=0,n_bits_left=0;
 }
 }
