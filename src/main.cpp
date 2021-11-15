@@ -1,7 +1,7 @@
 //main.cpp
 //Copyright (C) 2021-2022 张子辰
 //This file is part of the Huffman压缩器.
-#include <genbitstream.hpp>
+#include <char_frequency.hpp>
 #include <memory>
 #include <fstream>
 #include <iostream>

@@ -13,16 +13,16 @@ Version 1.0.0
 ```c++
 struct compressed_file_head_t
 {
-    uint8_t n_branches;            //Huffman树的叉数, 范围2~255，本节记为n
-    uint8_t code_unit_length;      //编码单元的长度, 范围1~16, 单位是4bit（0.5byte），本节记为m
+    uint8_t n_branches;            //Huffman树的叉数, 范围2~256，本节记为n
+    uint8_t code_unit_length;      //编码单元的长度, 范围1~64, 单位是bit，本节记为m
     uint64_t raw_file_length;      //原始的文件的长度，单位byte
     uint64_t n_data_blocks;        //数据块的数量
 };
 ```
 
-之后是Huffman树。因为`n`-叉Huffman树是正则`n`-叉树，所以可以通过先序遍历唯一确定Huffman树的结构。首先保存Huffman树的先序遍历，一个结点使用1bit，虚拟结点（分支点）用0表示，叶子结点用1表示，使用0填充至整数字节。之后按从左往右的顺序保存叶子结点对应的字母，一个字母的长度是4`m` bit，使用0填充至整数字节。
+之后是Huffman树。因为`n`-叉Huffman树是正则`n`-叉树，所以可以通过先序遍历唯一确定Huffman树的结构。首先保存Huffman树的先序遍历，一个结点使用1bit，虚拟结点（分支点）用0表示，叶子结点用1表示，使用0填充至整数字节。之后按从左往右的顺序保存叶子结点对应的字母，一个字母的长度是`m` bit，使用0填充至整数字节。
 
-之后是若干数据块。一个数据块对应原始文件的1byte~512MiB的数据。单个数据块格式：
+之后是若干数据块。一个数据块对应原始文件的1KiB~512MiB的数据。单个数据块格式：
 
 ```c++
 struct data_block_t
