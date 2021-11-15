@@ -8,9 +8,9 @@
 #include <map>
 #include <cstdint>
 #ifdef HMCMPSR_DLLEXPORT
-#   define HMCPSR_API __declspec(__dllexport__)
+#   define HMCMPSR_API __declspec(__dllexport__)
 #else
-#   define HMCPSR_API
+#   define HMCMPSR_API
 #endif
 
 namespace hmcmpsr
@@ -19,7 +19,7 @@ struct huffman_tree_impl;
 class ogenbitstream_base;
 class igenbitstream_base;
 class char_frequency_t;
-class HMCPSR_API huffman_tree
+class HMCMPSR_API huffman_tree
 {
 public:
     huffman_tree();
@@ -38,4 +38,4 @@ private:
     std::unique_ptr<huffman_tree_impl> m;
 };
 }
-#undef HMCPSR_API
+#undef HMCMPSR_API

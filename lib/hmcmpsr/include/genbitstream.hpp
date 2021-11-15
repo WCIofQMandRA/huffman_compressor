@@ -6,9 +6,9 @@
 #include <cstdint>
 #include <iosfwd>
 #ifdef HMCMPSR_DLLEXPORT
-#   define HMCPSR_API __declspec(__dllexport__)
+#   define HMCMPSR_API __declspec(__dllexport__)
 #else
-#   define HMCPSR_API
+#   define HMCMPSR_API
 #endif
 
 namespace hmcmpsr
@@ -16,7 +16,7 @@ namespace hmcmpsr
 const unsigned GENBITSTREAM_EOF=256;
 
 //广义bit流， 一般的bit只能取0/1，但为了处理n叉Huffman树，这里的bit可以取0/1/.../radix-1
-class HMCPSR_API ogenbitstream_base
+class HMCMPSR_API ogenbitstream_base
 {
 public:
     virtual void putbit(unsigned bit)=0;//写入1bit信息
@@ -24,7 +24,7 @@ public:
     virtual ~ogenbitstream_base()noexcept =default;
 };
 
-class HMCPSR_API igenbitstream_base
+class HMCMPSR_API igenbitstream_base
 {
 public:
     virtual unsigned getbit()=0;//读取1bit信息
@@ -34,7 +34,7 @@ public:
 };
 
 //radix不是2^n
-class HMCPSR_API ogenbitstream_n2:public ogenbitstream_base
+class HMCMPSR_API ogenbitstream_n2:public ogenbitstream_base
 {
 public:
     //radix: 流的进制，n叉Huffman数要求radix=n
@@ -52,7 +52,7 @@ private:
 };
 
 //radix不是2^n
-class HMCPSR_API igenbitstream_n2:public igenbitstream_base
+class HMCMPSR_API igenbitstream_n2:public igenbitstream_base
 {
 public:
     igenbitstream_n2(unsigned radix);
@@ -67,6 +67,7 @@ private:
     size_t m_length=0;
     void *m_buffer;
 };
+
 }
 
-#undef HMCPSR_API
+#undef HMCMPSR_API
