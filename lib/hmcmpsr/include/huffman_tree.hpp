@@ -24,7 +24,7 @@ public:
     huffman_tree();
     ~huffman_tree();
     //根据字符串出现的频率建树, n_branches是Huffman树的叉数
-    //取值范围：2<=n_branches<=255
+    //取值范围：2<=n_branches<=256
     void build_tree(const char_frequency_t &char_frequency,unsigned n_branches);
 
     //从is读入n_chars个字符，将编码后的结果输出到os, n_chars必须是编码单元大小的整数倍
@@ -40,7 +40,11 @@ public:
     //从流读取Huffman树
     void load_tree(std::istream &is,unsigned n_branches,unsigned code_unit_length);
     void save_tree(std::ostream &os);//将Huffman树保存到流
+
+    //输出Huffman树
+    friend std::ostream& operator<<(std::ostream&,const huffman_tree&);
 private:
+    friend struct huffman_tree_impl;
     std::unique_ptr<huffman_tree_impl> m;
 };
 }
