@@ -62,7 +62,7 @@ constexpr unsigned log_2(unsigned x)
 
 namespace hmcmpsr
 {
-ogenbitstream_n2::ogenbitstream_n2(unsigned radix):m_radix(radix)
+ogenbitstream_g::ogenbitstream_g(unsigned radix):m_radix(radix)
 {
     if(radix>256)
         throw std::out_of_range("In hmcpsr::genobitstream_n2::genobitstream_n2, the radix is greater than 256.");
@@ -70,7 +70,7 @@ ogenbitstream_n2::ogenbitstream_n2(unsigned radix):m_radix(radix)
     mpz_init_set_si(M_BUFFER,0);
 }
 
-ogenbitstream_n2::~ogenbitstream_n2()noexcept
+ogenbitstream_g::~ogenbitstream_g()noexcept
 {
     try
     {
@@ -80,7 +80,7 @@ ogenbitstream_n2::~ogenbitstream_n2()noexcept
     catch(...){}
 }
 
-void ogenbitstream_n2::putbit(unsigned bit)
+void ogenbitstream_g::putbit(unsigned bit)
 {
     if(bit)
     {
@@ -97,7 +97,7 @@ void ogenbitstream_n2::putbit(unsigned bit)
     ++m_length;
 }
 
-void ogenbitstream_n2::save(std::ostream &os)
+void ogenbitstream_g::save(std::ostream &os)
 {
     //压缩后的理论长度，单位genbit，也就是压缩后的文件使用n进制输出时的长度
     uint32_t compressed_genbits=ched(static_cast<uint32_t>(m_length));
@@ -115,7 +115,7 @@ void ogenbitstream_n2::save(std::ostream &os)
     m_length=0;
 }
 
-igenbitstream_n2::igenbitstream_n2(unsigned radix):m_radix(radix)
+igenbitstream_g::igenbitstream_g(unsigned radix):m_radix(radix)
 {
     if(radix>256)
         throw std::out_of_range("In hmcpsr::igenbitstream_n2::igenbitstream_n2, the radix is greater than 256.");
@@ -123,7 +123,7 @@ igenbitstream_n2::igenbitstream_n2(unsigned radix):m_radix(radix)
     mpz_init(M_BUFFER);
 }
 
-igenbitstream_n2::~igenbitstream_n2()noexcept
+igenbitstream_g::~igenbitstream_g()noexcept
 {
     try
     {
@@ -133,7 +133,7 @@ igenbitstream_n2::~igenbitstream_n2()noexcept
     catch(...){}
 }
 
-unsigned igenbitstream_n2::getbit()
+unsigned igenbitstream_g::getbit()
 {
     if(m_length)
     {
@@ -147,7 +147,7 @@ unsigned igenbitstream_n2::getbit()
     else return GENBITSTREAM_EOF;
 }
 
-void igenbitstream_n2::load(std::istream &is)
+void igenbitstream_g::load(std::istream &is)
 {
     uint32_t compressed_genbits,compressed_bytes;
     is.read(reinterpret_cast<char*>(&compressed_genbits),4);
@@ -177,12 +177,12 @@ void igenbitstream_n2::load(std::istream &is)
     mpz_limbs_finish(M_BUFFER,buf_sizec);
 }
 
-igenbitstream_n2::operator bool()
+igenbitstream_g::operator bool()
 {
     return m_length!=0;
 }
 
-ogenbitstream_2::ogenbitstream_2(unsigned radix):m_radix(radix),log2_radix(log_2(radix))
+ogenbitstream_2n::ogenbitstream_2n(unsigned radix):m_radix(radix),log2_radix(log_2(radix))
 {
     if(radix!=(radix&-radix))
         throw std::out_of_range("hmcpsr::genobitstream_2::genobitstream_2, radix is not 2^n.");
@@ -190,7 +190,7 @@ ogenbitstream_2::ogenbitstream_2(unsigned radix):m_radix(radix),log2_radix(log_2
         throw std::out_of_range("In hmcpsr::genobitstream_2::genobitstream_2, the radix is greater than 256.");
 }
 
-void ogenbitstream_2::putbit(unsigned bit)
+void ogenbitstream_2n::putbit(unsigned bit)
 {
     if(bit>=m_radix)
         throw std::out_of_range("In hmcpsr::ogenbitstream_2::putbit, bit[which is"
@@ -211,7 +211,7 @@ void ogenbitstream_2::putbit(unsigned bit)
     ++m_length;
 }
 
-void ogenbitstream_2::save(std::ostream &os)
+void ogenbitstream_2n::save(std::ostream &os)
 {
     if(n_bits_left)
         m_buffer+=last_char;
@@ -224,7 +224,7 @@ void ogenbitstream_2::save(std::ostream &os)
     m_length=0,last_char=0,n_bits_left=0;
 }
 
-igenbitstream_2::igenbitstream_2(unsigned radix):m_radix(radix),log2_radix(log_2(radix))
+igenbitstream_2n::igenbitstream_2n(unsigned radix):m_radix(radix),log2_radix(log_2(radix))
 {
     if(radix!=(radix&-radix))
         throw std::out_of_range("hmcpsr::igenbitstream_2::igenbitstream_2, radix is not 2^n.");
@@ -232,12 +232,12 @@ igenbitstream_2::igenbitstream_2(unsigned radix):m_radix(radix),log2_radix(log_2
         throw std::out_of_range("In hmcpsr::igenbitstream_2::igenbitstream_2, the radix is greater than 256.");
 }
 
-igenbitstream_2::operator bool()
+igenbitstream_2n::operator bool()
 {
     return m_length!=0;
 }
 
-unsigned igenbitstream_2::getbit()
+unsigned igenbitstream_2n::getbit()
 {
     if(m_length==0)return GENBITSTREAM_EOF;
     if(n_bits_left>=log2_radix)
@@ -260,7 +260,7 @@ unsigned igenbitstream_2::getbit()
     }
 }
 
-void igenbitstream_2::load(std::istream &is)
+void igenbitstream_2n::load(std::istream &is)
 {
     unsigned compressed_genbits,compressed_bytes;
     is.read(reinterpret_cast<char*>(&compressed_genbits),4);

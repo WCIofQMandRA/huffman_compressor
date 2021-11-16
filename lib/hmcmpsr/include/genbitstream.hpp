@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <iosfwd>
 #include <string>
+#include <memory>
 #ifdef HMCMPSR_DLLEXPORT
 #   define HMCMPSR_API __declspec(__dllexport__)
 #else
@@ -34,14 +35,14 @@ public:
     virtual ~igenbitstream_base()noexcept =default;
 };
 
-//radix不是2^n
-class HMCMPSR_API ogenbitstream_n2:public ogenbitstream_base
+//radix可以取任何值
+class HMCMPSR_API ogenbitstream_g:public ogenbitstream_base
 {
 public:
     //radix: 流的进制，n叉Huffman数要求radix=n
     //2<=n<=256
-    ogenbitstream_n2(unsigned radix);
-    ~ogenbitstream_n2()noexcept;
+    ogenbitstream_g(unsigned radix);
+    ~ogenbitstream_g()noexcept;
     //写入1bit信息
     void putbit(unsigned bit)override;
     //将缓冲区的内容全部写入os
@@ -52,12 +53,12 @@ private:
     void *m_buffer;
 };
 
-//radix不是2^n
-class HMCMPSR_API igenbitstream_n2:public igenbitstream_base
+//radix可以取任何值
+class HMCMPSR_API igenbitstream_g:public igenbitstream_base
 {
 public:
-    igenbitstream_n2(unsigned radix);
-    ~igenbitstream_n2()noexcept;
+    igenbitstream_g(unsigned radix);
+    ~igenbitstream_g()noexcept;
     operator bool()override;
     //读取1bit信息
     unsigned getbit()override;
@@ -70,12 +71,12 @@ private:
 };
 
 //radix是2^n
-class HMCMPSR_API ogenbitstream_2:public ogenbitstream_base
+class HMCMPSR_API ogenbitstream_2n:public ogenbitstream_base
 {
 public:
     //radix: 流的进制，n叉Huffman数要求radix=n
     //2<=n<=255
-    ogenbitstream_2(unsigned radix);
+    ogenbitstream_2n(unsigned radix);
     //写入1bit信息
     void putbit(unsigned bit)override;
     //将缓冲区的内容全部写入os
@@ -89,10 +90,10 @@ private:
 };
 
 //radix是2^n
-class HMCMPSR_API igenbitstream_2:public igenbitstream_base
+class HMCMPSR_API igenbitstream_2n:public igenbitstream_base
 {
 public:
-    igenbitstream_2(unsigned radix);
+    igenbitstream_2n(unsigned radix);
     operator bool()override;
     //读取1bit信息
     unsigned getbit()override;
@@ -107,6 +108,39 @@ private:
     std::basic_string<unsigned char>::iterator input_iterator;
 };
 
+//辅助类
+class ogenbitstream
+{
+public:
+    ogenbitstream(unsigned radix)
+    {
+        if(radix==(radix&-radix))
+            impl=std::make_unique<ogenbitstream_2n>(radix);
+        else
+            impl=std::make_unique<ogenbitstream_g>(radix);
+    }
+    void putbit(unsigned bit){impl->putbit(bit);}
+    void save(std::ostream &os){impl->save(os);}
+private:
+    std::unique_ptr<ogenbitstream_base> impl;
+};
+
+//辅助类
+class igenbitstream
+{
+public:
+    igenbitstream(unsigned radix)
+    {
+        if(radix==(radix&-radix))
+            impl=std::make_unique<igenbitstream_2n>(radix);
+        else
+            impl=std::make_unique<igenbitstream_g>(radix);
+    }
+    unsigned getbit(){return impl->getbit();}
+    void load(std::istream &is){impl->load(is);}
+private:
+    std::unique_ptr<igenbitstream_base> impl;
+};
 }
 
 #undef HMCMPSR_API

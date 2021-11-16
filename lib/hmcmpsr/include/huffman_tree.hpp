@@ -15,35 +15,61 @@
 namespace hmcmpsr
 {
 struct huffman_tree_impl;
-class ogenbitstream_base;
-class igenbitstream_base;
+class ogenbitstream;
+class igenbitstream;
 class char_frequency_t;
-class HMCMPSR_API huffman_tree
+
+class HMCMPSR_API huffman_tree_base
 {
 public:
-    huffman_tree();
-    ~huffman_tree();
+    virtual ~huffman_tree_base()=default;
+
     //根据字符串出现的频率建树, n_branches是Huffman树的叉数
     //取值范围：2<=n_branches<=256
-    void build_tree(const char_frequency_t &char_frequency,unsigned n_branches);
+    virtual void build_tree(const char_frequency_t &char_frequency,unsigned n_branches)=0;
 
     //从is读入n_chars个字符，将编码后的结果输出到os, n_chars必须是编码单元大小的整数倍
     //若编码单元的大小不是整字节，n_chars还要是偶数
     //os的radix必须与build_tree的n_branches相同
-    void encode(ogenbitstream_base &os,std::istream &is,size_t n_chars);
+    virtual void encode(ogenbitstream &os,std::istream &is,size_t n_chars)=0;
 
     //从is读入若干字符，将解码后的结果输出到os，使解码后的字符串的长度为n_chars, n_chars必须是符号单元大小的整数倍
     //若编码单元的大小不是整字节，n_chars还要是偶数
     //is的radix必须与build_tree的n_branches相同
-    void decode(std::ostream &os,igenbitstream_base &is,size_t n_chars);
+    virtual void decode(std::ostream &os,igenbitstream &is,size_t n_chars)=0;
 
     //从流读取Huffman树
-    void load_tree(std::istream &is,unsigned n_branches,unsigned code_unit_length);
-    void save_tree(std::ostream &os);//将Huffman树保存到流
+    virtual void load_tree(std::istream &is,unsigned n_branches,unsigned code_unit_length)=0;
+    virtual void save_tree(std::ostream &os)=0;//将Huffman树保存到流
 
     //输出Huffman树
-    friend std::ostream& operator<<(std::ostream&,const huffman_tree&);
+    friend std::ostream& operator<<(std::ostream &os,const huffman_tree_base &tree)
+    {
+        tree.output_impl(os);
+        return os;
+    }
 private:
+    virtual void output_impl(std::ostream&)const=0;
+};
+
+class HMCMPSR_API huffman_tree: public huffman_tree_base
+{
+public:
+    huffman_tree();
+    ~huffman_tree();
+    
+    void build_tree(const char_frequency_t &char_frequency,unsigned n_branches)override;
+
+    void encode(ogenbitstream &os,std::istream &is,size_t n_chars)override;
+    void decode(std::ostream &os,igenbitstream &is,size_t n_chars)override;
+
+    void load_tree(std::istream &is,unsigned n_branches,unsigned code_unit_length)override;
+    void save_tree(std::ostream &os)override;
+private:
+    void output_impl(std::ostream&)const override;
+    //针对code_unit_length==8的优化
+    void encode8(ogenbitstream &os,std::istream &is,size_t n_chars);
+    void decode8(std::ostream &os,igenbitstream &is,size_t n_chars);
     friend struct huffman_tree_impl;
     std::unique_ptr<huffman_tree_impl> m;
 };

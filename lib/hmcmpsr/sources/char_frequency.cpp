@@ -9,6 +9,7 @@ namespace hmcmpsr
 {
 void char_frequency_t::staticize(std::istream &is)
 {
+    if(m_culen==8)return staticize8(is);
     uint64_t current_char=0;
     //当前的字符已经读取了多少bit
     unsigned current_char_bits=0;
@@ -41,5 +42,15 @@ void char_frequency_t::staticize(std::istream &is)
     }
     if(current_char_bits)
         ++(*this)[current_char];
+}
+
+void char_frequency_t::staticize8(std::istream &is)
+{
+    while(true)
+    {
+        uint8_t ch=(unsigned)is.get();
+        if(!is)break;
+        ++(*this)[ch];
+    }
 }
 }

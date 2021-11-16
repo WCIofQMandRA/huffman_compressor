@@ -22,7 +22,10 @@ public:
 
     //统计流中的字符的出现频次
     void staticize(std::istream &is);
+    //获取编码单元的长度
+    unsigned get_code_unit_length()const {return m_culen;}
 private:
+    void staticize8(std::istream &is);
     unsigned m_culen;
 };
 }
