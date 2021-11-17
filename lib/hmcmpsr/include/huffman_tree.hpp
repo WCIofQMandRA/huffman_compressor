@@ -21,10 +21,11 @@ class icustream;
 class ocustream;
 class char_frequency_t;
 
-class HMCMPSR_API huffman_tree_base
+class HMCMPSR_API huffman_tree
 {
 public:
-    virtual ~huffman_tree_base()=default;
+    static std::unique_ptr<huffman_tree> construct(unsigned n_branches);
+    virtual ~huffman_tree()=default;
 
     //根据字符串出现的频率建树, n_branches是Huffman树的叉数
     //取值范围：2<=n_branches<=256
@@ -43,7 +44,7 @@ public:
     virtual void save_tree(std::ostream &os)=0;//将Huffman树保存到流
 
     //输出Huffman树
-    friend std::ostream& operator<<(std::ostream &os,const huffman_tree_base &tree)
+    friend std::ostream& operator<<(std::ostream &os,const huffman_tree &tree)
     {
         tree.output_impl(os);
         return os;
@@ -52,11 +53,11 @@ private:
     virtual void output_impl(std::ostream&)const=0;
 };
 
-class HMCMPSR_API huffman_tree: public huffman_tree_base
+class HMCMPSR_API huffman_tree_g: public huffman_tree
 {
 public:
-    huffman_tree();
-    ~huffman_tree();
+    huffman_tree_g();
+    ~huffman_tree_g();
     
     void build_tree(const char_frequency_t &char_frequency,unsigned n_branches)override;
 

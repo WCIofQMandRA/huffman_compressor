@@ -13,6 +13,11 @@
 
 namespace hmcmpsr
 {
+std::unique_ptr<huffman_tree> huffman_tree::construct(unsigned n_branches)
+{
+    return std::make_unique<huffman_tree_g>();
+}
+
 struct huffman_tree_node
 {
     huffman_tree_node()=default;
@@ -32,13 +37,13 @@ struct huffman_tree_impl
     huffman_tree_node* input_dfs(unsigned n_branches,icustream &is,std::vector<huffman_tree_node*> &leaves_list);
 };
 
-huffman_tree::huffman_tree():m(std::make_unique<huffman_tree_impl>()){}
-huffman_tree::~huffman_tree()
+huffman_tree_g::huffman_tree_g():m(std::make_unique<huffman_tree_impl>()){}
+huffman_tree_g::~huffman_tree_g()
 {
     m->free(m->root);
 }
 
-void huffman_tree::build_tree(const char_frequency_t &char_frequency,unsigned n_branches)
+void huffman_tree_g::build_tree(const char_frequency_t &char_frequency,unsigned n_branches)
 {
     using qtype=std::tuple<uint64_t,uint32_t,huffman_tree_node*>;
     m->code_unit_length=char_frequency.get_code_unit_length();
@@ -99,7 +104,7 @@ void huffman_tree_impl::get_encoding(huffman_tree_node *node)
     }
 }
 
-void huffman_tree::output_impl(std::ostream &os)const
+void huffman_tree_g::output_impl(std::ostream &os)const
 {
     m->print(os,m->root,0);
 }
@@ -149,7 +154,7 @@ void huffman_tree_impl::free(huffman_tree_node *node)
     }
 }
 
-void huffman_tree::encode(genbitsaver &os,icustream &is,size_t n_chars)
+void huffman_tree_g::encode(genbitsaver &os,icustream &is,size_t n_chars)
 {
     while(n_chars)
     {
@@ -163,7 +168,7 @@ void huffman_tree::encode(genbitsaver &os,icustream &is,size_t n_chars)
     }
 }
 
-void huffman_tree::decode(ocustream &os,genbitloader &is)
+void huffman_tree_g::decode(ocustream &os,genbitloader &is)
 {
     while(true)
     {
@@ -179,7 +184,7 @@ void huffman_tree::decode(ocustream &os,genbitloader &is)
 }
 
 //TODO
-void huffman_tree::load_tree(std::istream &is)
+void huffman_tree_g::load_tree(std::istream &is)
 {
     unsigned n_branches=(uint8_t)is.get();
     m->code_unit_length=(uint8_t)is.get();
@@ -198,7 +203,7 @@ void huffman_tree::load_tree(std::istream &is)
     m->get_encoding(m->root);
 }
 
-void huffman_tree::save_tree(std::ostream &os)
+void huffman_tree_g::save_tree(std::ostream &os)
 {
     uint8_t n_branches=m->root->child.size();
     uint8_t code_unit_length=m->code_unit_length;
