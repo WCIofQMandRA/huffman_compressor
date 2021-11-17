@@ -142,7 +142,7 @@ icustream_124::icustream_124(unsigned culen,std::istream &is):m_culen(culen),m_m
 
 icustream& icustream_124::operator>>(uint64_t &ch)
 {
-    if(current_char_bits)
+    if(!current_char_bits)
     {
         current_char=m_is.get();
         if(!m_is)current_char=0;
