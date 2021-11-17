@@ -260,4 +260,9 @@ huffman_tree_node* huffman_tree_impl::input_dfs(unsigned n_branches,icustream &i
     }
 }
 
+unsigned huffman_tree_g::get_code_unit_length()const
+{
+    return m->code_unit_length;
+}
+
 }
