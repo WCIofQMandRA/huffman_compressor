@@ -48,6 +48,7 @@ public:
     void clear()override;
 private:
     const unsigned m_culen;
+    const uint64_t m_mask;
     std::istream &m_is;
     uint8_t current_char=0;             //正在读入的字符
     unsigned current_char_bits=0;       //当前的字符已经读取了多少bit
@@ -82,7 +83,7 @@ private:
     std::istream &m_is;
 };
 
-//针对culen==8的icustream实现
+//针对culen==8的ocustream实现
 class HMCMPSR_API ocustream_8: public ocustream
 {
 public:
@@ -90,6 +91,38 @@ public:
     ocustream& operator<<(uint64_t ch) override;
     unsigned get_culen()const override{return 8;}
 private:
+    std::ostream &m_os;
+};
+
+//针对culen是8的因数的icustream实现
+class HMCMPSR_API icustream_124: public icustream
+{
+public:
+    icustream_124(unsigned culen,std::istream &is);
+    icustream& operator>>(uint64_t &ch) override;
+    explicit operator bool()override;
+    unsigned get_culen()const override{return 1;}
+    void clear()override;
+private:
+    uint8_t current_char=0;
+    unsigned current_char_bits=0;
+    const unsigned m_culen;
+    const uint8_t m_mask;
+    std::istream &m_is;
+};
+
+//针对culen是8的因数的ocustream实现
+class HMCMPSR_API ocustream_124: public ocustream
+{
+public:
+    ocustream_124(unsigned culen,std::ostream &os);
+    ocustream& operator<<(uint64_t ch) override;
+    unsigned get_culen()const override{return 1;}
+    void sync()override;
+private:
+    uint8_t current_char=0;
+    unsigned current_char_bits=0;
+    const unsigned m_culen;
     std::ostream &m_os;
 };
 }

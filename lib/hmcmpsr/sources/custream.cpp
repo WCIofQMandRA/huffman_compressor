@@ -9,23 +9,25 @@ namespace hmcmpsr
 std::unique_ptr<icustream> icustream::construct(unsigned culen,std::istream &is)
 {
     if(culen==8)return std::make_unique<icustream_8>(is);
+    else if(8%culen==0)return std::make_unique<icustream_124>(culen,is);
     else return std::make_unique<icustream_g>(culen,is);
 }
 
 std::unique_ptr<ocustream> ocustream::construct(unsigned culen,std::ostream &os)
 {
     if(culen==8)return std::make_unique<ocustream_8>(os);
+    else if(8%culen==0)return std::make_unique<ocustream_124>(culen,os);
     else return std::make_unique<ocustream_g>(culen,os);
 }
 
-icustream_g::icustream_g(unsigned culen,std::istream &is):m_culen(culen),m_is(is){}
+icustream_g::icustream_g(unsigned culen,std::istream &is):m_culen(culen),m_mask((1ull<<culen)-1),m_is(is){}
 
 icustream& icustream_g::operator>>(uint64_t &ch)
 {
     //current_char剩余的bit数足以填满ch
     if(current_char_bits>=m_culen)
     {
-        ch=current_char&((1u<<m_culen)-1);
+        ch=current_char&m_mask;
         current_char>>=m_culen;
         current_char_bits-=m_culen;
     }
@@ -44,7 +46,7 @@ icustream& icustream_g::operator>>(uint64_t &ch)
             ch|=(j<<i);
             i+=8;
         }
-        ch&=(1ull<<m_culen)-1;
+        ch&=m_mask;
         //把j中的bit填入ch后，还有多余的bit
         if(i>m_culen)
         {
@@ -108,7 +110,7 @@ void ocustream_g::sync()
 {
     if(current_char_bits)
     {
-        m_os.put(uint8_t(current_char));
+        m_os.put(current_char);
         current_char=0;
         current_char_bits=0;
     }
@@ -134,6 +136,59 @@ ocustream& ocustream_8::operator<<(uint64_t ch)
 {
     m_os.put(uint8_t(ch));
     return *this;
+}
+
+icustream_124::icustream_124(unsigned culen,std::istream &is):m_culen(culen),m_mask((1u<<culen)-1),m_is(is){}
+
+icustream& icustream_124::operator>>(uint64_t &ch)
+{
+    if(current_char_bits)
+    {
+        current_char=m_is.get();
+        if(!m_is)current_char=0;
+        current_char_bits=8;
+    }
+    ch=current_char&m_mask;
+    current_char>>=m_culen;
+    current_char_bits-=m_culen;
+    return *this;
+}
+
+icustream_124::operator bool()
+{
+    return bool(m_is);
+}
+
+void icustream_124::clear()
+{
+    m_is.clear();
+    current_char=0;
+    current_char_bits=0;
+}
+
+ocustream_124::ocustream_124(unsigned culen,std::ostream &os):m_culen(culen),m_os(os){}
+
+ocustream& ocustream_124::operator<<(uint64_t ch)
+{
+    current_char|=uint8_t(ch<<current_char_bits);
+    current_char_bits+=m_culen;
+    if(current_char_bits==8)
+    {
+        m_os.put(current_char);
+        current_char=0;
+        current_char_bits=0;
+    }
+    return *this;
+}
+
+void ocustream_124::sync()
+{
+    if(current_char_bits)
+    {
+        m_os.put(current_char);
+        current_char=0;
+        current_char_bits=0;
+    }
 }
 
 }
