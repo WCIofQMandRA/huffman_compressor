@@ -20,7 +20,7 @@ struct compressed_file_head_t
 };
 ```
 
-之后是Huffman树。因为`n`-叉Huffman树是正则`n`-叉树，所以可以通过先序遍历唯一确定Huffman树的结构。首先保存Huffman树的先序遍历，一个结点使用1bit，虚拟结点（分支点）用0表示，叶子结点用1表示，使用0填充至整数字节。之后按从左往右的顺序保存叶子结点对应的字母，一个字母的长度是`m` bit，使用0填充至整数字节。
+之后是Huffman树。因为`n`-叉Huffman树是正则`n`-叉树，所以可以通过先序遍历唯一确定Huffman树的结构。首先保存Huffman树的先序遍历，一个结点使用2bit，虚拟结点（分支点）用00表示，表示字符的叶子结点用10表示，虚拟叶子结点用11表示，使用0填充至整数字节。之后按从左往右的顺序保存叶子结点对应的字母，一个字母的长度是`m` bit，使用0填充至整数字节。
 ```c++
 struct huffman_tree_t
 {
@@ -30,7 +30,7 @@ struct huffman_tree_t
     custream chars;               //按从左往右的顺序保存叶子结点对应的字母, 忽略虚拟字符
 };
 ```
-bitstream 由`ibitstream`读取，`obitstream`写入。custream由`icustream`读取，`ocustream`写入。
+bitstream和custream由`icustream`读取，`ocustream`写入。
 
 之后是若干数据块。一个数据块对应原始文件的1KiB~512MiB的数据。除最后一个数据块外，其他数据块的长度是code_unit_length的倍数（单位byte）。单个数据块格式：
 ```c++

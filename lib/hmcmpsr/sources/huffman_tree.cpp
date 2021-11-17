@@ -28,6 +28,8 @@ struct huffman_tree_impl
     void print(std::ostream&,huffman_tree_node *,int)const;
     void free(huffman_tree_node*);
     void get_encoding(huffman_tree_node *node);
+    void output_dfs(huffman_tree_node *node,ocustream &os,std::vector<huffman_tree_node*> &leaves_list);
+    huffman_tree_node* input_dfs(unsigned n_branches,icustream &is,std::vector<huffman_tree_node*> &leaves_list);
 };
 
 huffman_tree::huffman_tree():m(std::make_unique<huffman_tree_impl>()){}
@@ -177,7 +179,80 @@ void huffman_tree::decode(ocustream &os,genbitloader &is)
 }
 
 //TODO
-void huffman_tree::load_tree(std::istream &is,unsigned n_branches,unsigned code_unit_length){}
-void huffman_tree::save_tree(std::ostream &os){}
+void huffman_tree::load_tree(std::istream &is)
+{
+    unsigned n_branches=(uint8_t)is.get();
+    m->code_unit_length=(uint8_t)is.get();
+    std::vector<huffman_tree_node*> leaves;
+    if(m->root)
+        m->free(m->root);
+    {
+        icustream_124 stream(2,is);
+        m->root=m->input_dfs(n_branches,stream,leaves);
+    }
+    {
+        auto stream=icustream::construct(m->code_unit_length,is);
+        for(auto i:leaves)
+            *stream>>(i->ch);
+    }
+    m->get_encoding(m->root);
+}
+
+void huffman_tree::save_tree(std::ostream &os)
+{
+    uint8_t n_branches=m->root->child.size();
+    uint8_t code_unit_length=m->code_unit_length;
+    os.put(n_branches);
+    os.put(code_unit_length);
+    std::vector<huffman_tree_node*> leaves;
+    {
+        ocustream_124 stream(2,os);
+        m->output_dfs(m->root,stream,leaves);
+        stream.sync();
+    }
+    {
+        auto stream=ocustream::construct(m->code_unit_length,os);
+        for(auto i:leaves)
+            *stream<<(i->ch);
+        stream->sync();
+    }
+}
+
+void huffman_tree_impl::output_dfs(huffman_tree_node *node,ocustream &os,std::vector<huffman_tree_node*> &leaves_list)
+{
+    if(!node)os<<3;
+    else if(node->child.empty())
+    {
+        os<<2;
+        leaves_list.push_back(node);
+    }
+    else
+    {
+        os<<0;
+        for(auto i:node->child)
+            output_dfs(i,os,leaves_list);
+    }
+}
+
+huffman_tree_node* huffman_tree_impl::input_dfs(unsigned n_branches,icustream &is,std::vector<huffman_tree_node*> &leaves_list)
+{
+    uint64_t ch;
+    is>>ch;
+    if(ch==3)return nullptr;
+    else if(ch==2)
+    {
+        huffman_tree_node *node=new huffman_tree_node;
+        leaves_list.push_back(node);
+        return node;
+    }
+    else
+    {
+        huffman_tree_node *node=new huffman_tree_node;
+        node->child.resize(n_branches);
+        for(auto &i:node->child)
+            i=input_dfs(n_branches,is,leaves_list);
+        return node;
+    }
+}
 
 }

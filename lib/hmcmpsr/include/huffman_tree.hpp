@@ -39,7 +39,7 @@ public:
     virtual void decode(ocustream &os,genbitloader &is)=0;
 
     //从流读取Huffman树
-    virtual void load_tree(std::istream &is,unsigned n_branches,unsigned code_unit_length)=0;
+    virtual void load_tree(std::istream &is)=0;
     virtual void save_tree(std::ostream &os)=0;//将Huffman树保存到流
 
     //输出Huffman树
@@ -63,7 +63,7 @@ public:
     void encode(genbitsaver &os,icustream &is,size_t n_chars)override;
     void decode(ocustream &os,genbitloader &is)override;
 
-    void load_tree(std::istream &is,unsigned n_branches,unsigned code_unit_length)override;
+    void load_tree(std::istream &is)override;
     void save_tree(std::ostream &os)override;
 private:
     void output_impl(std::ostream&)const override;
