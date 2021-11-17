@@ -5,7 +5,7 @@
 #pragma once
 #include <cstdint>
 #include <iosfwd>
-#include <string>
+#include <vector>
 #include <memory>
 #ifdef HMCMPSR_DLLEXPORT
 #   define HMCMPSR_API __declspec(__dllexport__)
@@ -58,6 +58,7 @@ private:
     const unsigned m_radix;
     size_t m_length=0;
     void *m_buffer;
+    void *m_pow_radix_length;
 };
 
 //radix可以取任何值
@@ -93,7 +94,7 @@ public:
 private:
     const unsigned m_radix,log2_radix;
     size_t m_length=0;
-    std::basic_string<unsigned char> m_buffer;
+    std::vector<uint8_t> m_buffer;
     unsigned char last_char=0;
     unsigned n_bits_left=0;
 };
@@ -112,10 +113,10 @@ public:
 private:
     const unsigned m_radix,log2_radix;
     size_t m_length=0;
-    std::basic_string<unsigned char> m_buffer;
+    std::vector<uint8_t> m_buffer;
     unsigned char first_char=0;
     unsigned n_bits_left=0;
-    std::basic_string<unsigned char>::iterator input_iterator;
+    std::vector<uint8_t>::iterator input_iterator;
 };
 }
 

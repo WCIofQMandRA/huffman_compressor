@@ -59,6 +59,7 @@ constexpr unsigned log_2(unsigned x)
 }
 
 #define M_BUFFER reinterpret_cast<__mpz_struct*>(m_buffer)
+#define M_POW_RADIX_LENGTH reinterpret_cast<__mpz_struct*>(m_pow_radix_length)
 
 namespace hmcmpsr
 {
@@ -84,7 +85,9 @@ genbitsaver_g::genbitsaver_g(unsigned radix):m_radix(radix)
     if(radix>256)
         throw std::out_of_range("In hmcpsr::genobitstream_n2::genobitstream_n2, the radix is greater than 256.");
     m_buffer=new __mpz_struct;
-    mpz_init_set_si(M_BUFFER,0);
+    m_pow_radix_length=new __mpz_struct;
+    mpz_init_set_ui(M_BUFFER,0);
+    mpz_init_set_ui(M_POW_RADIX_LENGTH,1);
 }
 
 genbitsaver_g::~genbitsaver_g()noexcept
@@ -92,7 +95,9 @@ genbitsaver_g::~genbitsaver_g()noexcept
     try
     {
         ::mpz_clear(M_BUFFER);
+        ::mpz_clear(M_POW_RADIX_LENGTH);
         delete M_BUFFER;
+        delete M_POW_RADIX_LENGTH;
     }
     catch(...){}
 }
@@ -106,11 +111,11 @@ void genbitsaver_g::putbit(unsigned bit)
             +std::to_string(bit)+"] >= m_radix[which is "+std::to_string(m_radix)+"].");
         mpz_t tmp;
         mpz_init(tmp);
-        mpz_ui_pow_ui(tmp,m_radix,m_length);
-        mpz_mul_ui(tmp,tmp,bit);
+        mpz_mul_ui(tmp,M_POW_RADIX_LENGTH,bit);
         mpz_add(M_BUFFER,M_BUFFER,tmp);
         mpz_clear(tmp);
     }
+    mpz_mul_ui(M_POW_RADIX_LENGTH,M_POW_RADIX_LENGTH,m_radix);
     ++m_length;
 }
 
@@ -129,6 +134,7 @@ void genbitsaver_g::save(std::ostream &os)
         os.write(reinterpret_cast<char*>(&x),sizeof(x));
     }
     mpz_set_ui(M_BUFFER,0);
+    mpz_set_ui(M_POW_RADIX_LENGTH,1);
     m_length=0;
 }
 
@@ -221,7 +227,7 @@ void genbitsaver_2n::putbit(unsigned bit)
     else
     {
         last_char|=static_cast<uint8_t>(bit<<n_bits_left);
-        m_buffer+=last_char;
+        m_buffer.push_back(last_char);
         last_char=static_cast<uint8_t>(bit>>(8-n_bits_left));
         n_bits_left=(n_bits_left+log2_radix)-8;
     }
@@ -231,9 +237,9 @@ void genbitsaver_2n::putbit(unsigned bit)
 void genbitsaver_2n::save(std::ostream &os)
 {
     if(n_bits_left)
-        m_buffer+=last_char;
+        m_buffer.push_back(last_char);
     uint32_t compressed_genbits=ched(static_cast<uint32_t>(m_length));
-    uint32_t compressed_bytes=ched(static_cast<uint32_t>(m_buffer.length()));
+    uint32_t compressed_bytes=ched(static_cast<uint32_t>(m_buffer.size()));
     os.write(reinterpret_cast<char*>(&compressed_genbits),4);
     os.write(reinterpret_cast<char*>(&compressed_bytes),4);
     os.write(reinterpret_cast<char*>(m_buffer.data()),m_buffer.size());
