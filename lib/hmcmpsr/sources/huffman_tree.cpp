@@ -53,7 +53,7 @@ void huffman_tree::build_tree(const char_frequency_t &char_frequency,unsigned n_
     if((char_frequency.size()-1)%(n_branches-1)!=0)
     {
         //加入权为0的填充字符
-        for(int i=(char_frequency.size()-1)%(n_branches-1);i>0;--i)
+        for(int i=(char_frequency.size()-1)%(n_branches-1);i<n_branches-1;++i)
             q.push({0,0,nullptr});
     }
     while(q.size()!=1)
