@@ -3,54 +3,20 @@
 //This file is part of the hmcmpsr library.
 
 #include <char_frequency.hpp>
+#include <custream.hpp>
 #include <iostream>
 
 namespace hmcmpsr
 {
-void char_frequency_t::staticize(std::istream &is)
+void char_frequency_t::staticize(icustream &is)
 {
-    if(m_culen==8)return staticize8(is);
+    m_culen=is.get_culen();
     uint64_t current_char=0;
-    //当前的字符已经读取了多少bit
-    unsigned current_char_bits=0;
-    while(is)
-    {
-        unsigned chi=(unsigned)is.get();
-        if(chi>=256)break;
-        uint8_t ch=chi;
-        if(current_char_bits+8<m_culen)
-        {
-            current_char|=(uint64_t(ch)<<current_char_bits);
-            current_char_bits+=8;
-        }
-        else
-        {
-            uint64_t x=current_char|(uint64_t(ch)<<current_char_bits);
-            if(m_culen!=64)x&=(1ull<<m_culen)-1;
-            ++(*this)[x];
-            current_char=ch>>(m_culen-current_char_bits);
-            current_char_bits=current_char_bits+8-m_culen;
-            //在m_culen<8时，读入1byte的信息可能填满多个编码单元
-            while(current_char_bits>=m_culen)
-            {
-                x=current_char&((1ull<<m_culen)-1);
-                ++(*this)[x];
-                current_char>>=m_culen;
-                current_char_bits-=m_culen;
-            }
-        }
-    }
-    if(current_char_bits)
-        ++(*this)[current_char];
-}
-
-void char_frequency_t::staticize8(std::istream &is)
-{
     while(true)
     {
-        uint8_t ch=(unsigned)is.get();
+        is>>current_char;
         if(!is)break;
-        ++(*this)[ch];
+        ++(*this)[current_char];
     }
 }
 }

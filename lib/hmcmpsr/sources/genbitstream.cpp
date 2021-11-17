@@ -62,6 +62,23 @@ constexpr unsigned log_2(unsigned x)
 
 namespace hmcmpsr
 {
+
+std::unique_ptr<genbitsaver> genbitsaver::construct(unsigned radix)
+{
+    if(radix==(radix&-radix))
+        return std::make_unique<genbitsaver_2n>(radix);
+    else
+        return std::make_unique<genbitsaver_g>(radix);
+}
+
+std::unique_ptr<genbitloader> genbitloader::construct(unsigned radix)
+{
+    if(radix==(radix&-radix))
+        return std::make_unique<genbitloader_2n>(radix);
+    else
+        return std::make_unique<genbitloader_g>(radix);
+}
+
 genbitsaver_g::genbitsaver_g(unsigned radix):m_radix(radix)
 {
     if(radix>256)
@@ -272,4 +289,6 @@ void genbitloader_2n::load(std::istream &is)
     input_iterator=m_buffer.begin();
     first_char=0,n_bits_left=0;
 }
+
+
 }

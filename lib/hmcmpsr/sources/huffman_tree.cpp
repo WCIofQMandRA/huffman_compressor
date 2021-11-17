@@ -4,6 +4,7 @@
 
 #include <huffman_tree.hpp>
 #include <char_frequency.hpp>
+#include <custream.hpp>
 #include <genbitstream.hpp>
 #include <vector>
 #include <queue>
@@ -146,38 +147,23 @@ void huffman_tree_impl::free(huffman_tree_node *node)
     }
 }
 
-void huffman_tree::encode(ogenbitstream &os,std::istream &is,size_t n_chars)
-{
-    if(m->code_unit_length==8)return encode8(os,is,n_chars);
-    //TODO
-}
-
-void huffman_tree::decode(std::ostream &os,igenbitstream &is,size_t n_chars)
-{
-    if(m->code_unit_length==8)return decode8(os,is,n_chars);
-    //TODO
-}
-
-void huffman_tree::encode8(ogenbitstream &os,std::istream &is,size_t n_chars)
+void huffman_tree::encode(genbitsaver &os,icustream &is,size_t n_chars)
 {
     while(n_chars)
     {
-        uint64_t ch=is.get();
-        if(ch>=256)break;
-        {
-            auto it=m->encoding.find(ch);
-            for(auto j:it->second)
-            {
-                os.putbit(j);
-            }
-        }
-        n_chars--;
+        uint64_t ch;
+        is>>ch;
+        if(!is)break;
+        auto it=m->encoding.find(ch);
+        for(auto j:it->second)
+            os.putbit(j);
+        --n_chars;
     }
 }
 
-void huffman_tree::decode8(std::ostream &os,igenbitstream &is,size_t n_chars)
+void huffman_tree::decode(ocustream &os,genbitloader &is)
 {
-    while(n_chars)
+    while(true)
     {
         auto node=m->root;
         while(node->child.size())
@@ -186,8 +172,7 @@ void huffman_tree::decode8(std::ostream &os,igenbitstream &is,size_t n_chars)
             if(bit==GENBITSTREAM_EOF)return;
             node=node->child[bit];
         }
-        os.put((unsigned char)node->ch);
-        --n_chars;
+        os<<node->ch;
     }
 }
 

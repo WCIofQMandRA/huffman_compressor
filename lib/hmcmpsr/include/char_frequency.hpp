@@ -5,7 +5,6 @@
 #pragma once
 #include <map>
 #include <cstdint>
-#include <iosfwd>
 
 #ifdef HMCMPSR_DLLEXPORT
 #   define HMCMPSR_API __declspec(__dllexport__)
@@ -15,17 +14,15 @@
 
 namespace hmcmpsr
 {
+class icustream;
 class HMCMPSR_API char_frequency_t:public std::map<uint64_t,uint64_t>
 {
 public:
-    char_frequency_t(unsigned code_unit_length):m_culen(code_unit_length){}
-
     //统计流中的字符的出现频次
-    void staticize(std::istream &is);
+    void staticize(icustream &is);
     //获取编码单元的长度
     unsigned get_code_unit_length()const {return m_culen;}
 private:
-    void staticize8(std::istream &is);
     unsigned m_culen;
 };
 }

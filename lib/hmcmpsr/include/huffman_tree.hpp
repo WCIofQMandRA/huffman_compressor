@@ -15,8 +15,10 @@
 namespace hmcmpsr
 {
 struct huffman_tree_impl;
-class ogenbitstream;
-class igenbitstream;
+class genbitsaver;
+class genbitloader;
+class icustream;
+class ocustream;
 class char_frequency_t;
 
 class HMCMPSR_API huffman_tree_base
@@ -28,15 +30,13 @@ public:
     //取值范围：2<=n_branches<=256
     virtual void build_tree(const char_frequency_t &char_frequency,unsigned n_branches)=0;
 
-    //从is读入n_chars个字符，将编码后的结果输出到os, n_chars必须是编码单元大小的整数倍
-    //若编码单元的大小不是整字节，n_chars还要是偶数
+    //从is读入n_chars个字符，将编码后的结果输出到os
     //os的radix必须与build_tree的n_branches相同
-    virtual void encode(ogenbitstream &os,std::istream &is,size_t n_chars)=0;
+    virtual void encode(genbitsaver &os,icustream &is,size_t n_chars)=0;
 
-    //从is读入若干字符，将解码后的结果输出到os，使解码后的字符串的长度为n_chars, n_chars必须是符号单元大小的整数倍
-    //若编码单元的大小不是整字节，n_chars还要是偶数
+    //从is读入若干字符，将解码后的结果输出到os，
     //is的radix必须与build_tree的n_branches相同
-    virtual void decode(std::ostream &os,igenbitstream &is,size_t n_chars)=0;
+    virtual void decode(ocustream &os,genbitloader &is)=0;
 
     //从流读取Huffman树
     virtual void load_tree(std::istream &is,unsigned n_branches,unsigned code_unit_length)=0;
@@ -60,16 +60,13 @@ public:
     
     void build_tree(const char_frequency_t &char_frequency,unsigned n_branches)override;
 
-    void encode(ogenbitstream &os,std::istream &is,size_t n_chars)override;
-    void decode(std::ostream &os,igenbitstream &is,size_t n_chars)override;
+    void encode(genbitsaver &os,icustream &is,size_t n_chars)override;
+    void decode(ocustream &os,genbitloader &is)override;
 
     void load_tree(std::istream &is,unsigned n_branches,unsigned code_unit_length)override;
     void save_tree(std::ostream &os)override;
 private:
     void output_impl(std::ostream&)const override;
-    //针对code_unit_length==8的优化
-    void encode8(ogenbitstream &os,std::istream &is,size_t n_chars);
-    void decode8(std::ostream &os,igenbitstream &is,size_t n_chars);
     friend struct huffman_tree_impl;
     std::unique_ptr<huffman_tree_impl> m;
 };
