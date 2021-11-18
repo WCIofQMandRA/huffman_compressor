@@ -7,12 +7,11 @@
 #include <hmcompressor.hpp>
 using namespace hmcmpsr;
 using namespace std;
-const int branch=2,culen=8;
 
 int main([[maybe_unused]]int argc,[[maybe_unused]]char **argv)
 {
 	single_cmpsr compressor;
-	compressor.open(std::filesystem::u8path("test.txt"),2,8);
+	compressor.open(std::filesystem::u8path("test.txt"),3,8);
 	compressor.compress(std::filesystem::u8path("test.hmz"));
 	compressor.close();
 

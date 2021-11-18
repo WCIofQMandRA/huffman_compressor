@@ -6,6 +6,8 @@ include(TestBigEndian)
 project(huffman_compressor VERSION 1.0.0.0)
 set(CMAKE_CXX_STANDARD 17)
 
+option(USE_MINI_GMP "强制使用mini-gmp编译" OFF)
+
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     add_compile_options(-Wall -Wextra -Wpedantic -Wformat=2 -Wconversion)
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
@@ -15,4 +17,5 @@ endif()
 set(OUTPUT_DIR ${CMAKE_BINARY_DIR}/output)
 
 add_subdirectory(lib)
+add_subdirectory(nowide)
 add_subdirectory(src)

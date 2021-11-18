@@ -4,7 +4,7 @@
 
 #include <genbitstream.hpp>
 #ifdef HMCPSR_NOGMP
-#   include <mini_gmp.h>
+#   include <mini-gmp.h>
 #else
 #   include <gmp.h>
 #endif

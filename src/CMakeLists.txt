@@ -14,6 +14,6 @@ elseif(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Darwin")
 	set_target_properties(huffman_compressor PROPERTIES INSTALL_RPATH "@loader_path/../lib")
 endif()
 
-target_link_libraries(huffman_compressor hmcmpsr)
+target_link_libraries(huffman_compressor hmcmpsr nowide)
 
 set_property(TARGET huffman_compressor PROPERTY RUNTIME_OUTPUT_DIRECTORY $<1:${OUTPUT_DIR}/bin>)
