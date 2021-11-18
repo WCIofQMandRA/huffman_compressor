@@ -15,6 +15,8 @@ struct compressed_file_head_t
     //以下两个数据移至huffman_tree_t
     //uint8_t n_branches;          //Huffman树的叉数, 范围2~256，本节记为n
     //uint8_t code_unit_length;    //编码单元的长度, 范围1~64, 单位是bit，本节记为m
+    uint32_t identifier=2494000689;//文件标识，表明这是一个hmz文件
+    uint32_t version=0;            //文件版本，目前为0
     uint64_t raw_file_length;      //原始的文件的长度，单位byte
     uint64_t n_data_blocks;        //数据块的数量
 };

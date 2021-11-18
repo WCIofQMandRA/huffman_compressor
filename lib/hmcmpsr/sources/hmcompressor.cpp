@@ -9,6 +9,10 @@
 #include <char_frequency.hpp>
 #include <fstream>
 #include <numeric>
+#include "change_endian.hpp"
+
+constexpr uint32_t hmz_identifier=2494000689;
+constexpr uint32_t hmz_version=0;
 
 namespace fs=std::filesystem;
 namespace hmcmpsr
@@ -98,9 +102,13 @@ void single_cmpsr::compress(const std::filesystem::path &compressed_file_path)
     huffman_tree();
 
     //第一步: 保存文件头
+    auto hmz_identifier2=ched(hmz_identifier),hmz_version2=ched(hmz_version);
+    ofs.write(reinterpret_cast<const char*>(&hmz_identifier2),4);
+    ofs.write(reinterpret_cast<const char*>(&hmz_version2),4);
     n_data_blocks=(raw_file_length+data_block_length-1)/data_block_length;
-    ofs.write(reinterpret_cast<char*>(&raw_file_length),8);
-    ofs.write(reinterpret_cast<char*>(&n_data_blocks),8);
+    auto raw_file_length2=ched(raw_file_length),n_data_blocks2=ched(n_data_blocks);
+    ofs.write(reinterpret_cast<char*>(&raw_file_length2),8);
+    ofs.write(reinterpret_cast<char*>(&n_data_blocks2),8);
     
     //第二步：保存Huffman树
     m->tree->save_tree(ofs);
@@ -136,8 +144,20 @@ void single_dcmpsr::open(const std::filesystem::path &compressed_file_path)
     m->ifs.open(compressed_file_path,std::ios::binary);
     if(!m->ifs)
         throw std::runtime_error("single_dcmpsr::open: 无法打开文件");
+    uint32_t hmz_identifier2,hmz_version2;
+    m->ifs.read(reinterpret_cast<char*>(&hmz_identifier2),4);
+    hmz_identifier2=ched(hmz_identifier2);
+    if(hmz_identifier2!=hmz_identifier)
+        throw std::runtime_error("single_dcmpsr::open: 不是有效的hmz文件");
+    hmz_version2=ched(hmz_version2);
+    m->ifs.read(reinterpret_cast<char*>(&hmz_version2),4);
+    if(hmz_version2>hmz_version)
+        throw std::runtime_error("single_dcmpsr::open: 文件版本过高, 最高支持0，但文件的version="
+        +std::to_string(hmz_version2));
     m->ifs.read(reinterpret_cast<char*>(&m->raw_file_length),8);
     m->ifs.read(reinterpret_cast<char*>(&m->n_data_blocks),8);
+    m->raw_file_length=ched(m->raw_file_length);
+    m->n_data_blocks=ched(m->n_data_blocks);
     m->nbranches=m->ifs.get();
     m->culen=m->ifs.get();
     if(!m->ifs)
@@ -193,7 +213,7 @@ const huffman_tree& single_dcmpsr::huffman_tree()
     if(!m->tree_done)
     {
         //让读入指针位于文件头后
-        m->ifs.seekg(16);
+        m->ifs.seekg(24);
         m->tree->load_tree(m->ifs);
         m->data_start=m->ifs.tellg();
         m->tree_done=true;
