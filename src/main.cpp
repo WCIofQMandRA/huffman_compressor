@@ -11,21 +11,14 @@ const int branch=2,culen=8;
 
 int main([[maybe_unused]]int argc,[[maybe_unused]]char **argv)
 {
-	ifstream fin("test.txt");
-	ofstream fout("test.hmz");
 	single_cmpsr compressor;
-	compressor.n_branches=2;
-	compressor.code_unit_length=8;
-	compressor.data_block_size=1048576;
-	compressor.compress(fout,fin);
-	fin.close();
-	fout.close();
+	compressor.open(std::filesystem::u8path("test.txt"),2,8);
+	compressor.compress(std::filesystem::u8path("test.hmz"));
+	compressor.close();
 
-	fin.open("test.hmz");
-	fout.open("test2.txt");
 	single_dcmpsr decompressor;
-	decompressor.decompress(fout,fin);
-	fin.close();
-	fout.close();
+	decompressor.open(std::filesystem::u8path("test.hmz"));
+	decompressor.decompress(std::filesystem::u8path("test2.txt"));
+	decompressor.close();
 	return 0;
 }

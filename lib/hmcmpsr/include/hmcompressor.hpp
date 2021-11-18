@@ -4,8 +4,8 @@
 
 #pragma once
 #include <memory>
-#include <iosfwd>
-#include <cstdint>
+#include <filesystem>
+#include <iostream>
 
 #ifdef HMCMPSR_DLLEXPORT
 #   define HMCMPSR_API __declspec(__dllexport__)
@@ -15,22 +15,55 @@
 
 namespace hmcmpsr
 {
+class huffman_tree;
+class char_frequency_t;
+struct single_cmpsr_impl;
 //单个文件的压缩器
 class HMCMPSR_API single_cmpsr
 {
 public:
-    void compress(std::ofstream &ofs,std::ifstream &ifs);
-    unsigned n_branches=2;
-    unsigned code_unit_length=8;
-    //单位byte
-    //实际的数据块大小是不超过这个数字的最大的code_unit_length/gcd(code_unit_length,8)的倍数
-    uint64_t data_block_size=1048576/*1MiB*/;
+    single_cmpsr();
+    ~single_cmpsr();
+    //打开原始文件
+    void open(const std::filesystem::path &raw_file_path,
+        unsigned n_branches,
+        unsigned code_unit_length,
+        //实际的数据块大小是不超过这个数字的最大的code_unit_length/gcd(code_unit_length,8)的倍数
+        uint64_t data_block_size=1048576/*1MiB*/);
+    void close();
+    //返回字符出现的频率
+    const char_frequency_t& char_frequency();
+    //返回压缩使用的Huffman树
+    const class huffman_tree& huffman_tree();
+    //压缩文件
+    void compress(const std::filesystem::path &compressed_file_path);
+private:
+    friend struct single_cmpsr_impl;
+    std::unique_ptr<single_cmpsr_impl>m;
 };
 
+struct single_dcmpsr_impl;
 class HMCMPSR_API single_dcmpsr
 {
 public:
-    void decompress(std::ofstream &ofs,std::ifstream &ifs);
+    single_dcmpsr();
+    ~single_dcmpsr();
+    void open(const std::filesystem::path &compressed_file_path);
+    void close();
+    void decompress(const std::filesystem::path &uncompressed_file_path);
+    //查询原始文件大小
+    uint64_t raw_file_size();
+    //查询数据块的数量
+    uint64_t data_blocks_number();
+    //查询Huffman树是叉数
+    unsigned huffman_tree_branches();
+    //查询编码单元长度，单位bit
+    unsigned code_unit_length();
+    //查询Huffman树
+    const class huffman_tree& huffman_tree();
+private:
+    friend struct single_dcmpsr_impl;
+    std::unique_ptr<single_dcmpsr_impl> m;
 };
 }
 

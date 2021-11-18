@@ -44,6 +44,7 @@ public:
     virtual void save_tree(std::ostream &os)=0;//将Huffman树保存到流
 
     virtual unsigned get_code_unit_length()const=0;
+    virtual unsigned get_n_branches()const=0;
 
     //输出Huffman树
     friend std::ostream& operator<<(std::ostream &os,const huffman_tree &tree)
@@ -70,6 +71,7 @@ public:
     void save_tree(std::ostream &os)override;
 
     unsigned get_code_unit_length()const override;
+    unsigned get_n_branches()const override;
 private:
     void output_impl(std::ostream&)const override;
     friend struct huffman_tree_impl;

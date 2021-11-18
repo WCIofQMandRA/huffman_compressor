@@ -162,6 +162,8 @@ void huffman_tree_g::encode(genbitsaver &os,icustream &is,size_t n_chars)
         is>>ch;
         if(!is)break;
         auto it=m->encoding.find(ch);
+        if(it==m->encoding.end())
+            throw std::runtime_error("huffman_tree_g::encode: 输入流中含有不在Huffman树中的字符.");
         for(auto j:it->second)
             os.putbit(j);
         --n_chars;
@@ -178,12 +180,13 @@ void huffman_tree_g::decode(ocustream &os,genbitloader &is)
             unsigned bit=is.getbit();
             if(bit==GENBITSTREAM_EOF)return;
             node=node->child[bit];
+            if(!node)
+                throw std::runtime_error("huffman_tree_g::decode: 输入流中含有不在Huffman树中的编码");
         }
         os<<node->ch;
     }
 }
 
-//TODO
 void huffman_tree_g::load_tree(std::istream &is)
 {
     unsigned n_branches=(uint8_t)is.get();
@@ -198,7 +201,11 @@ void huffman_tree_g::load_tree(std::istream &is)
     {
         auto stream=icustream::construct(m->code_unit_length,is);
         for(auto i:leaves)
+        {
             *stream>>(i->ch);
+            if(!*stream)
+                throw std::runtime_error("huffman_tree_g::load_tree: Huffman树格式错误-字符");
+        }
     }
     m->get_encoding(m->root);
 }
@@ -243,6 +250,7 @@ huffman_tree_node* huffman_tree_impl::input_dfs(unsigned n_branches,icustream &i
 {
     uint64_t ch;
     is>>ch;
+    if(!is)throw std::runtime_error("huffman_tree_impl::input_dfs: Huffman树格式错误-形态_0");
     if(ch==3)return nullptr;
     else if(ch==2)
     {
@@ -250,7 +258,7 @@ huffman_tree_node* huffman_tree_impl::input_dfs(unsigned n_branches,icustream &i
         leaves_list.push_back(node);
         return node;
     }
-    else
+    else if(ch==0)
     {
         huffman_tree_node *node=new huffman_tree_node;
         node->child.resize(n_branches);
@@ -258,11 +266,17 @@ huffman_tree_node* huffman_tree_impl::input_dfs(unsigned n_branches,icustream &i
             i=input_dfs(n_branches,is,leaves_list);
         return node;
     }
+    else throw std::runtime_error("huffman_tree_impl::input_dfs: Huffman树格式错误-形态_1");
 }
 
 unsigned huffman_tree_g::get_code_unit_length()const
 {
     return m->code_unit_length;
+}
+
+unsigned huffman_tree_g::get_n_branches()const
+{
+    return m->root->child.size();
 }
 
 }
