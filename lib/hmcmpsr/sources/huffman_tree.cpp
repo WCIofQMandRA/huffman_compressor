@@ -116,12 +116,12 @@ void huffman_tree_impl::print(std::ostream &os,huffman_tree_node *node,int deept
     for(int i=0;i<deepth-1;++i)
     {
         os<<(is_last_child[i]?" ":"│");
-        os<<"   ";
+        os<<" ";
     }
     if(deepth)
     {
         os<<(is_last_child[deepth-1]?"└":"├");
-        os<<"── ";
+        os<<"─";
     }
 
     if(node==nullptr)
