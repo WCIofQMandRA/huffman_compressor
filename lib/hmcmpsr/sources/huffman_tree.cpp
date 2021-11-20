@@ -2,10 +2,10 @@
 //Copyright (C) 2021-2022 张子辰
 //This file is part of the hmcmpsr library.
 
-#include <huffman_tree.hpp>
-#include <char_frequency.hpp>
-#include <custream.hpp>
-#include <genbitstream.hpp>
+#include <hmcmpsr/huffman_tree.hpp>
+#include <hmcmpsr/char_frequency.hpp>
+#include <hmcmpsr/custream.hpp>
+#include <hmcmpsr/genbitstream.hpp>
 #include <vector>
 #include <queue>
 #include <tuple>

@@ -4,13 +4,13 @@
 #include <memory>
 #include <fstream>
 #include <iostream>
-#include <hmcompressor.hpp>
+#include <hmcmpsr/hmcompressor.hpp>
 #include "exit.hpp"
 #include "argument.hpp"
 #include <nowide/iostream.hpp>
 #include <typeinfo>
-#include <char_frequency.hpp>
-#include <huffman_tree.hpp>
+#include <hmcmpsr/char_frequency.hpp>
+#include <hmcmpsr/huffman_tree.hpp>
 #include <iomanip>
 #include <cmath>
 #include "advancement_info.hpp"

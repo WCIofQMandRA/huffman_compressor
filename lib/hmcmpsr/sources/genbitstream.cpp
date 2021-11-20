@@ -2,7 +2,7 @@
 //Copyright (C) 2021-2022 张子辰
 //This file is part of the hmcmpsr library.
 
-#include <genbitstream.hpp>
+#include <hmcmpsr/genbitstream.hpp>
 #ifdef HMCPSR_NOGMP
 #   include <mini-gmp.h>
 #else

@@ -2,11 +2,11 @@
 //Copyright (C) 2021-2022 张子辰
 //This file is part of the hmcmpsr library.
 
-#include <hmcompressor.hpp>
-#include <genbitstream.hpp>
-#include <custream.hpp>
-#include <huffman_tree.hpp>
-#include <char_frequency.hpp>
+#include <hmcmpsr/hmcompressor.hpp>
+#include <hmcmpsr/genbitstream.hpp>
+#include <hmcmpsr/custream.hpp>
+#include <hmcmpsr/huffman_tree.hpp>
+#include <hmcmpsr/char_frequency.hpp>
 #include <fstream>
 #include <numeric>
 #include "change_endian.hpp"

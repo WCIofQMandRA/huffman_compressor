@@ -2,8 +2,8 @@
 //Copyright (C) 2021-2022 张子辰
 //This file is part of the hmcmpsr library.
 
-#include <char_frequency.hpp>
-#include <custream.hpp>
+#include <hmcmpsr/char_frequency.hpp>
+#include <hmcmpsr/custream.hpp>
 #include <iostream>
 
 namespace hmcmpsr
