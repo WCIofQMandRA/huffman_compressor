@@ -104,7 +104,7 @@ public:
     icustream_124(unsigned culen,std::istream &is);
     icustream& operator>>(uint64_t &ch) override;
     explicit operator bool()override;
-    unsigned get_culen()const override{return 1;}
+    unsigned get_culen()const override{return m_culen;}
     void clear()override;
     uint64_t tellg()override;
 private:
@@ -121,7 +121,7 @@ class HMCMPSR_API ocustream_124: public ocustream
 public:
     ocustream_124(unsigned culen,std::ostream &os);
     ocustream& operator<<(uint64_t ch) override;
-    unsigned get_culen()const override{return 1;}
+    unsigned get_culen()const override{return m_culen;}
     void sync()override;
 private:
     uint8_t current_char=0;

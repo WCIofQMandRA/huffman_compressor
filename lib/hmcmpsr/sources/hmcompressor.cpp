@@ -123,7 +123,7 @@ void single_cmpsr::compress(const std::filesystem::path &compressed_file_path)
     for(uint64_t i=0;i<n_data_blocks;++i)
     {
         auto ogb=genbitsaver::construct(m->nbranches);
-        m->tree->encode(*ogb,*icus,data_block_length);
+        m->tree->encode(*ogb,*icus,data_block_length*8/m->culen);
         ogb->save(ofs);
         if(adv_ostream!=nullptr)
         {
