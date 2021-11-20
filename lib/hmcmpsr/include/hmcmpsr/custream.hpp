@@ -52,6 +52,7 @@ private:
     const unsigned m_culen;
     const uint64_t m_mask;
     std::istream &m_is;
+    bool m_ok=true;
     uint8_t current_char=0;             //正在读入的字符
     unsigned current_char_bits=0;       //当前的字符已经读取了多少bit
                                         //assert(current_char_bits<8)

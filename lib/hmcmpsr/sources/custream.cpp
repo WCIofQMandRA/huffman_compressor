@@ -24,6 +24,7 @@ icustream_g::icustream_g(unsigned culen,std::istream &is):m_culen(culen),m_mask(
 
 icustream& icustream_g::operator>>(uint64_t &ch)
 {
+    bool is_first_get=true;
     //current_char剩余的bit数足以填满ch
     if(current_char_bits>=m_culen)
     {
@@ -42,7 +43,12 @@ icustream& icustream_g::operator>>(uint64_t &ch)
         while(i<m_culen)
         {
             j=m_is.get();
-            if(j>=256)j=0;
+            if(j>=256)
+            {
+                if(is_first_get)m_ok=false;//第一次get就失败才返回错误
+                j=0;
+            }
+            is_first_get=false;
             ch|=(j<<i);
             i+=8;
         }
@@ -65,7 +71,7 @@ icustream& icustream_g::operator>>(uint64_t &ch)
 
 icustream_g::operator bool()
 {
-    return bool(m_is);
+    return m_ok;
 }
 
 void icustream_g::clear()
@@ -73,6 +79,7 @@ void icustream_g::clear()
     m_is.clear();
     current_char=0;
     current_char_bits=0;
+    m_ok=true;
 }
 
 ocustream_g::ocustream_g(unsigned culen,std::ostream &os):m_culen(culen),m_os(os){}
