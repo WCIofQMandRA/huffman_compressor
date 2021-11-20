@@ -191,4 +191,8 @@ void ocustream_124::sync()
     }
 }
 
+uint64_t icustream_g::tellg(){return m_is.tellg();}
+uint64_t icustream_8::tellg(){return m_is.tellg();}
+uint64_t icustream_124::tellg(){return m_is.tellg();}
+
 }

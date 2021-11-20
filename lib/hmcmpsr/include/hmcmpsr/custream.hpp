@@ -23,6 +23,7 @@ public:
     virtual icustream& operator>>(uint64_t &ch)=0;
     virtual explicit operator bool()=0;
     virtual unsigned get_culen()const=0;
+    virtual uint64_t tellg()=0;
     virtual void clear()=0;
 };
 
@@ -46,6 +47,7 @@ public:
     explicit operator bool()override;
     unsigned get_culen()const override{return m_culen;}
     void clear()override;
+    uint64_t tellg()override;
 private:
     const unsigned m_culen;
     const uint64_t m_mask;
@@ -79,6 +81,7 @@ public:
     explicit operator bool()override;
     unsigned get_culen()const override{return 8;}
     void clear()override;
+    uint64_t tellg()override;
 private:
     std::istream &m_is;
 };
@@ -103,6 +106,7 @@ public:
     explicit operator bool()override;
     unsigned get_culen()const override{return 1;}
     void clear()override;
+    uint64_t tellg()override;
 private:
     uint8_t current_char=0;
     unsigned current_char_bits=0;

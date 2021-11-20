@@ -5,6 +5,7 @@
 #include <chrono>
 #include <nowide/iostream.hpp>
 #include "exit.hpp"
+#include <hmcmpsr/advancement.hpp>
 
 static std::chrono::system_clock::time_point last_int_time;
 
@@ -16,6 +17,7 @@ void keyboardint_handler(int)
         throw exit_type{3};
     last_int_time=now_time;
     nowide::cout<<"若要退出，请在0.5s内按两次Ctrl-C。"<<std::endl;
+    hmcmpsr::print_advancement(nowide::clog);
 }
 
 //改变SIGINT的响应函数，在收到SIGINT时输出压缩/解压进度信息

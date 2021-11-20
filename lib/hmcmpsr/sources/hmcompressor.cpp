@@ -10,6 +10,8 @@
 #include <fstream>
 #include <numeric>
 #include "change_endian.hpp"
+#include "print_advancement_stream.hpp"
+#include <chrono>
 
 constexpr uint32_t hmz_identifier=2494000689;
 constexpr uint32_t hmz_version=0;
@@ -27,7 +29,7 @@ struct single_cmpsr_impl
     bool cfre_done=false,tree_done=false;//已经计算好cfre/tree
     bool is_opened=false;
     unsigned nbranches,culen;
-    uint64_t dbsize;
+    uint64_t raw_file_length,dbsize;
 };
 
 single_cmpsr::single_cmpsr():m(std::make_unique<single_cmpsr_impl>())
@@ -48,6 +50,7 @@ void single_cmpsr::open(const std::filesystem::path &raw_file_path,
     m->nbranches=n_branches,m->culen=code_unit_length,m->dbsize=data_block_size;
     m->tree=huffman_tree::construct(n_branches);
     m->src_path=raw_file_path;
+    m->raw_file_length=fs::file_size(raw_file_path);
     m->is_opened=true,m->cfre_done=false,m->tree_done=false;
 }
 
@@ -65,7 +68,7 @@ const char_frequency_t& single_cmpsr::char_frequency()
     if(!m->cfre_done||fs::last_write_time(m->src_path)>m->src_cfre_create_time)
     {
         auto cuin=icustream::construct(m->culen,m->ifs);
-        m->cfre.staticize(*cuin);
+        m->cfre.staticize(*cuin,m->raw_file_length);
         m->ifs.clear();
         m->ifs.seekg(0);
         m->cfre_done=true;
@@ -94,7 +97,7 @@ void single_cmpsr::compress(const std::filesystem::path &compressed_file_path)
     if(!ofs)
         throw std::runtime_error("single_cmpsr::compress: 无法打开文件");
 
-    uint64_t raw_file_length=fs::file_size(m->src_path),n_data_blocks,data_block_length;
+    uint64_t n_data_blocks,data_block_length;
     {
         uint64_t tmp=m->culen/std::gcd(m->culen,8);
         data_block_length=m->dbsize/tmp*tmp;
@@ -105,8 +108,8 @@ void single_cmpsr::compress(const std::filesystem::path &compressed_file_path)
     auto hmz_identifier2=ched(hmz_identifier),hmz_version2=ched(hmz_version);
     ofs.write(reinterpret_cast<const char*>(&hmz_identifier2),4);
     ofs.write(reinterpret_cast<const char*>(&hmz_version2),4);
-    n_data_blocks=(raw_file_length+data_block_length-1)/data_block_length;
-    auto raw_file_length2=ched(raw_file_length),n_data_blocks2=ched(n_data_blocks);
+    n_data_blocks=(m->raw_file_length+data_block_length-1)/data_block_length;
+    auto raw_file_length2=ched(m->raw_file_length),n_data_blocks2=ched(n_data_blocks);
     ofs.write(reinterpret_cast<char*>(&raw_file_length2),8);
     ofs.write(reinterpret_cast<char*>(&n_data_blocks2),8);
     
@@ -115,11 +118,36 @@ void single_cmpsr::compress(const std::filesystem::path &compressed_file_path)
 
     //第三步：压缩并保存压缩后的文件
     auto icus=icustream::construct(m->culen,m->ifs);
+    namespace ck=std::chrono;
+    auto start_time=ck::system_clock::now();
     for(uint64_t i=0;i<n_data_blocks;++i)
     {
         auto ogb=genbitsaver::construct(m->nbranches);
         m->tree->encode(*ogb,*icus,data_block_length);
         ogb->save(ofs);
+        if(adv_ostream!=nullptr)
+        {
+            if(adv_ostream_mutex.try_lock())
+            {
+                double advance_rate=double(i+1)/n_data_blocks;
+                auto time_duration=ck::system_clock::now()-start_time;
+                auto second_cost=ck::duration_cast<ck::seconds>(time_duration).count();
+                decltype(second_cost) second_left=second_cost/advance_rate-second_cost;
+                std::ostringstream sout;
+                sout<<std::setprecision(2)<<std::fixed;
+                sout<<"正在压缩          "<<i+1<<"/"<<n_data_blocks
+                    <<"("<<100.0*advance_rate<<"%)";
+                sout<<"\n已耗时 "<<std::setfill('0')<<std::setw(2)<<second_cost/3600
+                    <<":"<<std::setw(2)<<second_cost/60%60
+                    <<":"<<std::setw(2)<<second_cost%60;
+                sout<<"    剩余 "<<std::setfill('0')<<std::setw(2)<<second_left/3600
+                    <<":"<<std::setw(2)<<second_left/60%60
+                    <<":"<<std::setw(2)<<second_left%60;
+                *adv_ostream<<sout.str()<<std::endl;
+                adv_ostream=nullptr;
+                adv_ostream_mutex.unlock();
+            }
+        }
     }
 }
 

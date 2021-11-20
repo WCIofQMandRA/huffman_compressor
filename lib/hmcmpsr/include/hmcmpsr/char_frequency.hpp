@@ -18,8 +18,8 @@ class icustream;
 class HMCMPSR_API char_frequency_t:public std::map<uint64_t,uint64_t>
 {
 public:
-    //统计流中的字符的出现频次
-    void staticize(icustream &is);
+    //统计流中的字符的出现频次，给出filelength可方便输出进度信息
+    void staticize(icustream &is,uint64_t filelength=0);
     //获取编码单元的长度
     unsigned get_code_unit_length()const {return m_culen;}
 private:
