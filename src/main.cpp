@@ -13,11 +13,13 @@
 #include <huffman_tree.hpp>
 #include <iomanip>
 #include <cmath>
+#include "advancement_info.hpp"
 
 int main(int argc,char **argv)
 {
 	try
 	{
+		catch_keyboardint();
 		parse_argument(argc,argv);
 		if(argu::raw_path)
 		{
