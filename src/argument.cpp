@@ -37,11 +37,11 @@ static void help()
         "     "<<app_name<<" -iTx example.txt.hmz\n\n";
     nowide::cout<<
 R"(基本用法:
-  -c, --compress <原始文件目录>     压缩文件。
-  -x, --extract <压缩文件目录>      提取文件。
-  -o, --out <输出文件目录>          指定输出文件目录。压缩时默认的输出目录是
-                                    <原始文件目录>+".hmz"，解压时默认的输出
-                                    目录是<压缩文件目录>-".hmz"。
+  -c, --compress <原始文件>         压缩文件。
+  -x, --extract <压缩文件>          提取文件。
+  -o, --out <输出文件>              指定输出文件的名称。压缩时默认的文件名是
+                                    <原始文件>+".hmz"，解压时默认的输出文件
+                                    名是<压缩文件>-".hmz"。
 
 压缩选项:
   -B, --branch <k> [=2]             使用k-叉Huffman树压缩。
