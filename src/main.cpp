@@ -18,9 +18,11 @@
 #include <iomanip>
 #include <cmath>
 #include "advancement_info.hpp"
+#include <nowide/args.hpp>
 
 int main(int argc,char **argv)
 {
+	nowide::args __args(argc,argv);
 	try
 	{
 		catch_keyboardint();
