@@ -84,7 +84,7 @@ int main(int argc,char **argv)
 				{
 					if(s.length()>=4&&s.substr(s.length()-4)==".hmz")
 						return s.substr(0,s.length()-4);
-					else return s;
+					else throw std::invalid_argument("字符串 `"+s+"' 的后缀不是`.hmz'.");
 				}(argu::cmp_path->u8string())));
 			dcmp.close();
 		}
