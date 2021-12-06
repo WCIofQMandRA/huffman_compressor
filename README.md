@@ -16,10 +16,6 @@ cmake --build . --config Release
 
 编译的输出位于`build\output`。
 
-### 库依赖
-
-1. Gtkmm 3.0 （`libgtkmm-3.0-dev/focal,now 3.24.2-1build1 amd64`）
-
 ## 使用方法
 
 ## 功能
