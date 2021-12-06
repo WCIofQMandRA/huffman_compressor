@@ -18,9 +18,17 @@ void keyboardint_handler(int)
     using namespace std::chrono_literals;
     auto now_time=std::chrono::system_clock::now();
     if(now_time-last_int_time<=500ms)
-        throw exit_type{3};
+    {
+        nowide::cerr<<"退出程序？(y/n)   "<<std::flush;
+        while(true)
+        {
+            char ch=getchar();
+            if(ch=='y'||ch=='Y')throw exit_type{3};
+            else if(ch=='n'||ch=='N')return;
+        }
+    }
     last_int_time=now_time;
-    nowide::cout<<"若要退出，请在0.5s内按两次Ctrl-C。"<<std::endl;
+    nowide::cerr<<"若要退出，请在0.5s内按两次Ctrl-C。"<<std::endl;
     hmcmpsr::print_advancement(nowide::clog);
 }
 
