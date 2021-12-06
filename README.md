@@ -80,6 +80,7 @@ huffman_compressor -iTx example.txt.hmz
 - [x] 将 Huffman 压缩的功能封装在 hmcmpsr 库中。
 - [x] 用高精度整数运算处理非 $2^n$-叉 Huffman 树。
 - [x] `--help`选项输出的帮助信息整齐而完整。
+- [x] 能够在 Windows 上正确地处理非 ASCII 字符（用 Boost.Nowide 和`std::filesystem`实现）。
 
 ## 许可证
 
