@@ -1,6 +1,9 @@
 //genbitstream.hpp: 广义比特流，用于写README中的data_block_t
 //Copyright (C) 2021-2022 张子辰
 //This file is part of the hmcmpsr library.
+// This library is free software, you can use and 
+// distrubute it under the term of the BSD 3-Clause
+// License, see the file “LICENSE” for detail.
 
 #pragma once
 #include <cstdint>

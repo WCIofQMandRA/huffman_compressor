@@ -1,6 +1,9 @@
 //genbitstream.cpp: 广义比特流
 //Copyright (C) 2021-2022 张子辰
 //This file is part of the hmcmpsr library.
+// This library is free software, you can use and 
+// distrubute it under the term of the BSD 3-Clause
+// License, see the file “LICENSE” for detail.
 
 #include <hmcmpsr/genbitstream.hpp>
 #ifdef HMCPSR_NOGMP

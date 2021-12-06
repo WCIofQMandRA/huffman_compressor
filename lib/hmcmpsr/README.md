@@ -55,3 +55,11 @@ struct compressed_file_t
 };
 ```
 
+## 许可证
+
+BSD 3-Clause License
+
+详见 `./LICENSE`。
+
+本库可以选择性地使用 mini-gmp 构建，但如果这么做，您在发布本库的二进制文件时，必须提供 mini-gmp 的源代码。
+

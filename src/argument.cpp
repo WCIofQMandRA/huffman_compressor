@@ -1,6 +1,10 @@
 //argument.cpp
 //Copyright (C) 2021-2022 张子辰
 //This file is part of the Huffman压缩器.
+// This software is free software, you can use and 
+// distrubute it under the term of the BSD 3-Clause
+// License, see the file “LICENSE” for detail.
+
 #include "argument.hpp"
 #include "exit.hpp"
 #include <nowide/iostream.hpp>
@@ -73,19 +77,48 @@ R"(基本用法:
 
 static void version()
 {
-    //TODO: 从config文件读入版本
+    //TODO（不影响功能）: 从config文件读入版本
     nowide::cout<<"Huffman树压缩器   Version 1.0.0.0\n";
     nowide::cout<<"Copyright (C) 2021-2022 张子辰\n";
-    nowide::cout<<"本程序是中国科学技术大学215院011系的马建辉副教授在2021年秋季学期"
-        "开始的数据结构课程(011127.01)的“Huffman编码压缩/解压器实验”的一部分。"
-        "该课程的老师和助教拥有使用、修改、分发本程序及其衍生作品的权利。\n详细的版权信息"
-        "可以使用 “"<<argu::app_name<<" --copying” 查看"<<std::endl;
+    nowide::cout<<"本软件是自由软件，您可以根据 BSD 3-Clause "
+                  "License 的条款使用和分发本软件。\n详细信息请使用 “"
+                  <<argu::app_name<<" --copying” 查看"<<std::endl;
 }
 
 static void copying()
 {
-    //TODO
-    nowide::cout<<"暂无"<<std::endl;
+    nowide::cout<<
+R"(                     BSD 3-Clause License
+
+Copyright (C) 2021-2022 张子辰
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+    (1) Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer. 
+
+    (2) Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in
+    the documentation and/or other materials provided with the
+    distribution.  
+    
+    (3)The name of the author “张子辰” may not be used to
+    endorse or promote products derived from this software without
+    specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.)"<<std::endl;
 }
 
 static uint64_t block_size_to_int(const std::string &s)

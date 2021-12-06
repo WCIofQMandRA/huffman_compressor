@@ -1,4 +1,10 @@
 //change endian: 在大端序时交换端序
+//Copyright (C) 2021-2022 张子辰
+//This file is part of the hmcmpsr library.
+// This library is free software, you can use and 
+// distrubute it under the term of the BSD 3-Clause
+// License, see the file “LICENSE” for detail.
+
 #ifdef HMCMPSR_BIG_ENDIAN
 template <typename IntType>
 constexpr IntType ched(IntType x)
