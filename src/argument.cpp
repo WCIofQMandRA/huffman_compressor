@@ -24,6 +24,7 @@ bool exit_show_tree=false;                          //在输出Huffman树后退�
 bool show_frequency=false;                          //输出各个字符的出现频率
 bool exit_show_frequency=false;                     //在输出字符频率后退出
 bool show_head=false,exit_show_head=false;
+bool override_existed=false;
 }
 
 static void help()
@@ -42,6 +43,7 @@ R"(基本用法:
   -o, --out <输出文件>              指定输出文件的名称。压缩时默认的文件名是
                                     <原始文件>+".hmz"，解压时默认的输出文件
                                     名是<压缩文件>-".hmz"。
+      --override                    在输出文件已存在时，覆盖原来的文件。
 
 压缩选项:
   -B, --branch <k> [=2]             使用k-叉Huffman树压缩。
@@ -219,6 +221,10 @@ void parse_argument(int argc,char **argv)
                 else if(argv[i]=="--show-info"s)
                 {
                     show_head=true;
+                }
+                else if(argv[i]=="--override"s)
+                {
+                    override_existed=true;
                 }
                 else
                 {

@@ -25,6 +25,7 @@ extern bool exit_show_tree;                                 //在输出Huffman�
 extern bool show_frequency;                                 //输出各个字符的出现频率
 extern bool exit_show_frequency;                            //在输出字符频率后退出
 extern bool show_head,exit_show_head;                       //输出文件头
+extern bool override_existed;                               //覆盖已存在的文件
 }
 
 void parse_argument(int argc,char **argv);

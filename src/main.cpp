@@ -56,7 +56,8 @@ int main(int argc,char **argv)
 					return 0;
 			}
 			cmp.compress(argu::output_path?*argu::output_path:
-				std::filesystem::u8path(argu::raw_path->u8string()+".hmz"));
+				std::filesystem::u8path(argu::raw_path->u8string()+".hmz"),
+				argu::override_existed);
 			cmp.close();
 		}
 		else if(argu::cmp_path)
@@ -85,7 +86,7 @@ int main(int argc,char **argv)
 					if(s.length()>=4&&s.substr(s.length()-4)==".hmz")
 						return s.substr(0,s.length()-4);
 					else throw std::invalid_argument("字符串 `"+s+"' 的后缀不是`.hmz'.");
-				}(argu::cmp_path->u8string())));
+				}(argu::cmp_path->u8string())),argu::override_existed);
 			dcmp.close();
 		}
 		else

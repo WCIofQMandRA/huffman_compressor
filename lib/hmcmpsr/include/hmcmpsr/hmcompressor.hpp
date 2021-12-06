@@ -1,4 +1,4 @@
-//hmcompressor.hpp: Huffman树压缩器的高级封装
+//hmcompressor.hpp: Huffman树压缩器的高层次封装
 //Copyright (C) 2021-2022 张子辰
 //This file is part of the hmcmpsr library.
 // This library is free software, you can use and 
@@ -39,7 +39,7 @@ public:
     //返回压缩使用的Huffman树
     const class huffman_tree& huffman_tree();
     //压缩文件
-    void compress(const std::filesystem::path &compressed_file_path);
+    void compress(const std::filesystem::path &compressed_file_path,bool override_existed=false);
 private:
     friend struct single_cmpsr_impl;
     std::unique_ptr<single_cmpsr_impl>m;
@@ -53,7 +53,7 @@ public:
     ~single_dcmpsr();
     void open(const std::filesystem::path &compressed_file_path);
     void close();
-    void decompress(const std::filesystem::path &uncompressed_file_path);
+    void decompress(const std::filesystem::path &uncompressed_file_path,bool override_existed=false);
     //查询原始文件大小
     uint64_t raw_file_size();
     //查询数据块的数量

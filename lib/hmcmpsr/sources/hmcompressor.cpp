@@ -1,4 +1,4 @@
-//hmcompressor.cpp: Huffman树压缩器的高级封装
+//hmcompressor.cpp: Huffman树压缩器的高层次封装
 //Copyright (C) 2021-2022 张子辰
 //This file is part of the hmcmpsr library.
 // This library is free software, you can use and 
@@ -94,8 +94,14 @@ const huffman_tree& single_cmpsr::huffman_tree()
     return *m->tree;
 }
 
-void single_cmpsr::compress(const std::filesystem::path &compressed_file_path)
+void single_cmpsr::compress(const std::filesystem::path &compressed_file_path,bool override_existed)
 {
+    //使用ifstream打开，以判断文件是否存在
+    {
+        std::ifstream tmp(compressed_file_path);
+        if(tmp&&!override_existed)
+            throw std::runtime_error("single_cmpsr::compress: 输出文件已存在");
+    }
     std::ofstream ofs(compressed_file_path,std::ios::binary);
     if(!ofs)
         throw std::runtime_error("single_cmpsr::compress: 无法打开文件");
@@ -252,8 +258,15 @@ const huffman_tree& single_dcmpsr::huffman_tree()
     return *m->tree;
 }
 
-void single_dcmpsr::decompress(const std::filesystem::path &uncompressed_file_path)
+void single_dcmpsr::decompress(const std::filesystem::path &uncompressed_file_path,bool override_existed)
 {
+    //使用ifstream打开，以判断文件是否存在
+    {
+        std::ifstream tmp(uncompressed_file_path);
+        if(tmp&&!override_existed)
+            throw std::runtime_error("single_dcmpsr::compress: 输出文件已存在");
+    }
+
     std::ofstream ofs(uncompressed_file_path,std::ios::binary);
     if(!ofs)
         throw std::runtime_error("single_dcmpsr::decompress: 无法打开文件");
