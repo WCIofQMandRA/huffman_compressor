@@ -9,8 +9,18 @@
 #include <hmcmpsr/char_frequency.hpp>
 #include <hmcmpsr/custream.hpp>
 #include <hmcmpsr/genbitstream.hpp>
-#include <vector>
-#include <queue>
+#ifdef HMCPSR_NOSTL
+#   include <zzc_container/vector.hpp>
+#   include <zzc_container/queue.hpp>
+#   define VECNS zzc
+#   define MAPCLS zzc::splay_tree
+#else
+#   include <vector>
+#   include <queue>
+#   define VECNS std
+#   define MAPCLS std::map
+#endif
+
 #include <tuple>
 #include <iostream>
 
@@ -26,18 +36,18 @@ struct huffman_tree_node
     huffman_tree_node()=default;
     huffman_tree_node(uint64_t ch):ch(ch){}
     uint64_t ch;
-    std::vector<huffman_tree_node*> child;
+    VECNS::vector<huffman_tree_node*> child;
 };
 struct huffman_tree_impl
 {
     huffman_tree_node* root=nullptr;
-    std::map<uint64_t,std::vector<uint8_t>> encoding;
+    MAPCLS<uint64_t,VECNS::vector<uint8_t>> encoding;
     unsigned code_unit_length;
     void print(std::ostream&,huffman_tree_node *,int)const;
     void free(huffman_tree_node*);
     void get_encoding(huffman_tree_node *node);
-    void output_dfs(huffman_tree_node *node,ocustream &os,std::vector<huffman_tree_node*> &leaves_list);
-    huffman_tree_node* input_dfs(unsigned n_branches,icustream &is,std::vector<huffman_tree_node*> &leaves_list);
+    void output_dfs(huffman_tree_node *node,ocustream &os,VECNS::vector<huffman_tree_node*> &leaves_list);
+    huffman_tree_node* input_dfs(unsigned n_branches,icustream &is,VECNS::vector<huffman_tree_node*> &leaves_list);
 };
 
 huffman_tree_g::huffman_tree_g():m(std::make_unique<huffman_tree_impl>()){}
@@ -52,8 +62,12 @@ void huffman_tree_g::build_tree(const char_frequency_t &char_frequency,unsigned 
     m->code_unit_length=char_frequency.get_code_unit_length();
     //weight,deepth,node
     //权相同时，深度小的优先，这样可以保证Huffman树的高度是O(ln(n_chars))，防止递归算法引起栈溢出
-    std::priority_queue<qtype,std::vector<qtype>,std::greater<qtype>> q;
-    std::map<uint64_t,huffman_tree_node*> position;
+#ifdef HMCPSR_NOSTL
+    zzc::priority_queue<qtype,std::greater<qtype>> q;
+#else
+    std::priority_queue<qtype,VECNS::vector<qtype>,std::greater<qtype>> q;
+#endif
+    MAPCLS<uint64_t,huffman_tree_node*> position;
     for(auto &i:char_frequency)
     {
         auto node=new huffman_tree_node(i.first);
@@ -89,7 +103,7 @@ void huffman_tree_g::build_tree(const char_frequency_t &char_frequency,unsigned 
 
 void huffman_tree_impl::get_encoding(huffman_tree_node *node)
 {
-    static thread_local std::vector<uint8_t> current_encoding;
+    static thread_local VECNS::vector<uint8_t> current_encoding;
     if(!node)return;
     if(node->child.empty())
     {
@@ -114,7 +128,7 @@ void huffman_tree_g::output_impl(std::ostream &os)const
 
 void huffman_tree_impl::print(std::ostream &os,huffman_tree_node *node,int deepth)const
 {
-    static thread_local std::vector<bool> is_last_child;
+    static thread_local VECNS::vector<bool> is_last_child;
     //if(deepth==0)is_last_child.clear();
     for(int i=0;i<deepth-1;++i)
     {
@@ -194,7 +208,7 @@ void huffman_tree_g::load_tree(std::istream &is)
 {
     unsigned n_branches=(uint8_t)is.get();
     m->code_unit_length=(uint8_t)is.get();
-    std::vector<huffman_tree_node*> leaves;
+    VECNS::vector<huffman_tree_node*> leaves;
     if(m->root)
         m->free(m->root);
     {
@@ -219,7 +233,7 @@ void huffman_tree_g::save_tree(std::ostream &os)
     uint8_t code_unit_length=m->code_unit_length;
     os.put(n_branches);
     os.put(code_unit_length);
-    std::vector<huffman_tree_node*> leaves;
+    VECNS::vector<huffman_tree_node*> leaves;
     {
         ocustream_124 stream(2,os);
         m->output_dfs(m->root,stream,leaves);
@@ -233,7 +247,7 @@ void huffman_tree_g::save_tree(std::ostream &os)
     }
 }
 
-void huffman_tree_impl::output_dfs(huffman_tree_node *node,ocustream &os,std::vector<huffman_tree_node*> &leaves_list)
+void huffman_tree_impl::output_dfs(huffman_tree_node *node,ocustream &os,VECNS::vector<huffman_tree_node*> &leaves_list)
 {
     if(!node)os<<3;
     else if(node->child.empty())
@@ -249,7 +263,7 @@ void huffman_tree_impl::output_dfs(huffman_tree_node *node,ocustream &os,std::ve
     }
 }
 
-huffman_tree_node* huffman_tree_impl::input_dfs(unsigned n_branches,icustream &is,std::vector<huffman_tree_node*> &leaves_list)
+huffman_tree_node* huffman_tree_impl::input_dfs(unsigned n_branches,icustream &is,VECNS::vector<huffman_tree_node*> &leaves_list)
 {
     uint64_t ch;
     is>>ch;

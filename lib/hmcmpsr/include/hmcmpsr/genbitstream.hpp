@@ -8,7 +8,11 @@
 #pragma once
 #include <cstdint>
 #include <iosfwd>
-#include <vector>
+#ifdef HMCPSR_NOSTL
+#   include <zzc_container/vector.hpp>
+#else
+#   include <vector>
+#endif
 #include <memory>
 #ifdef HMCMPSR_DLLEXPORT
 #   define HMCMPSR_API __declspec(__dllexport__)
@@ -97,7 +101,12 @@ public:
 private:
     const unsigned m_radix,log2_radix;
     size_t m_length=0;
-    std::vector<uint8_t> m_buffer;
+#ifdef HMCPSR_NOSTL
+    zzc::
+#else
+    std::
+#endif
+    vector<uint8_t> m_buffer;
     unsigned char last_char=0;
     unsigned n_bits_left=0;
 };
@@ -116,10 +125,20 @@ public:
 private:
     const unsigned m_radix,log2_radix;
     size_t m_length=0;
-    std::vector<uint8_t> m_buffer;
+#ifdef HMCPSR_NOSTL
+    zzc::
+#else
+    std::
+#endif
+    vector<uint8_t> m_buffer;
     unsigned char first_char=0;
     unsigned n_bits_left=0;
-    std::vector<uint8_t>::iterator input_iterator;
+#ifdef HMCPSR_NOSTL
+    zzc::
+#else
+    std::
+#endif
+    vector<uint8_t>::iterator input_iterator;
 };
 }
 

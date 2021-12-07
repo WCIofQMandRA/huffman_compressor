@@ -6,7 +6,11 @@
 // License, see the file “LICENSE” for detail.
 
 #pragma once
-#include <map>
+#ifdef HMCPSR_NOSTL
+#   include <zzc_container/splay_tree.hpp>
+#else
+#   include <map>
+#endif
 #include <cstdint>
 
 #ifdef HMCMPSR_DLLEXPORT
@@ -18,7 +22,13 @@
 namespace hmcmpsr
 {
 class icustream;
-class HMCMPSR_API char_frequency_t:public std::map<uint64_t,uint64_t>
+class HMCMPSR_API char_frequency_t: public
+#ifdef HMCPSR_NOSTL
+zzc::splay_tree
+#else
+std::map
+#endif
+<uint64_t,uint64_t>
 {
 public:
     //统计流中的字符的出现频次，给出filelength可方便输出进度信息
