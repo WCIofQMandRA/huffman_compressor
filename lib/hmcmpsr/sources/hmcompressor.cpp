@@ -275,11 +275,36 @@ void single_dcmpsr::decompress(const std::filesystem::path &uncompressed_file_pa
     m->ifs.seekg(m->data_start);
 
     auto ocus=ocustream::construct(m->culen,ofs);
+    namespace ck=std::chrono;
+    auto start_time=ck::system_clock::now();
     for(uint64_t i=0;i<m->n_data_blocks;++i)
     {
         auto igb=genbitloader::construct(m->nbranches);
         igb->load(m->ifs);
         m->tree->decode(*ocus,*igb);
+        if(adv_ostream!=nullptr)
+        {
+            if(adv_ostream_mutex.try_lock())
+            {
+                double advance_rate=double(i+1)/m->n_data_blocks;
+                auto time_duration=ck::system_clock::now()-start_time;
+                auto second_cost=ck::duration_cast<ck::seconds>(time_duration).count();
+                decltype(second_cost) second_left=second_cost/advance_rate-second_cost;
+                std::ostringstream sout;
+                sout<<std::setprecision(2)<<std::fixed;
+                sout<<"正在提取          "<<i+1<<"/"<<m->n_data_blocks
+                    <<"("<<100.0*advance_rate<<"%)";
+                sout<<"\n已耗时 "<<std::setfill('0')<<std::setw(2)<<second_cost/3600
+                    <<":"<<std::setw(2)<<second_cost/60%60
+                    <<":"<<std::setw(2)<<second_cost%60;
+                sout<<"    剩余 "<<std::setfill('0')<<std::setw(2)<<second_left/3600
+                    <<":"<<std::setw(2)<<second_left/60%60
+                    <<":"<<std::setw(2)<<second_left%60;
+                *adv_ostream<<sout.str()<<std::endl;
+                adv_ostream=nullptr;
+                adv_ostream_mutex.unlock();
+            }
+        }
     }
     ocus->sync();
 
