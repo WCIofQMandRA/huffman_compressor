@@ -19,5 +19,5 @@ endif()
 set(OUTPUT_DIR ${CMAKE_BINARY_DIR}/output)
 
 add_subdirectory(lib)
-add_subdirectory(nowide)
+add_subdirectory(ext/nowide)
 add_subdirectory(src)
