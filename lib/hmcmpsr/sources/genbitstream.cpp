@@ -149,6 +149,9 @@ void genbitloader_g::load(std::istream &is)
     is.read(reinterpret_cast<char*>(&compressed_bytes),4);
     m_length=ched(compressed_genbits);
     compressed_bytes=ched(compressed_bytes);
+    //compressed_bytes过长很可能是压缩文件损坏导致的
+    if(compressed_bytes>2147483648u)
+        throw std::runtime_error("genbitloader_g::load: compressed_bytes is too long.");
     //如果压缩文件在32位系统上创建，并且在64位系统上读取，compressed_bytes可能不是sizeof(mp_limb_t)
     //的整数倍
     //向上取整用于防止缓冲区不足，向下取整用于防止从文件中读入过多的内容
@@ -264,6 +267,9 @@ void genbitloader_2n::load(std::istream &is)
     is.read(reinterpret_cast<char*>(&compressed_bytes),4);
     m_length=ched(compressed_genbits);
     compressed_bytes=ched(compressed_bytes);
+    //compressed_bytes过长很可能是压缩文件损坏导致的
+    if(compressed_bytes>2147483648u)
+        throw std::runtime_error("genbitloader_2n::load: compressed_bytes is too long.");
     m_buffer.resize(compressed_bytes);
     is.read(reinterpret_cast<char*>(m_buffer.data()),m_buffer.size());
     if(!is)

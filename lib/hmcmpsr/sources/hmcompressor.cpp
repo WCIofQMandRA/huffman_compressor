@@ -45,6 +45,8 @@ single_cmpsr::~single_cmpsr(){}
 void single_cmpsr::open(const std::filesystem::path &raw_file_path,
     unsigned n_branches,unsigned code_unit_length,uint64_t data_block_size)
 {
+    if(data_block_size>134217728u)//128MiB
+        throw std::runtime_error("single_cmpsr::open: 数据块长度过大.");
     if(m->is_opened)
         throw std::runtime_error("single_cmpsr::open: 文件已打开");
     m->ifs.open(raw_file_path,std::ios::binary);

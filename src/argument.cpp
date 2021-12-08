@@ -50,7 +50,7 @@ R"(基本用法:
   -U, --unit-length <n> [=8]        在统计字符频率时，将原始文件的n个bit视为
                                     一个“字符”。
   -S, --block-size <n> [=1MiB]      指定压缩文件的数据块大小。
-                                    取值范围：1KiB~512MiB。
+                                    取值范围：1KiB~128MiB。
                                     默认的单位是byte，支持的单位：KB(1000
                                     byte), KiB(1024byte), MB(10⁶byte), MiB
                                     (2²⁰byte)。

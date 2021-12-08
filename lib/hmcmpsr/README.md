@@ -34,7 +34,7 @@ struct huffman_tree_t
 ```
 bitstream和custream由`icustream`读取，`ocustream`写入。
 
-之后是若干数据块。一个数据块对应原始文件的1KiB~512MiB的数据。除最后一个数据块外，其他数据块的长度是code_unit_length的倍数（单位byte）。单个数据块格式：
+之后是若干数据块。一个数据块对应原始文件的1KiB~128MiB的数据。除最后一个数据块外，其他数据块的长度是code_unit_length的倍数（单位byte）。单个数据块格式：
 ```c++
 struct data_block_t
 {
