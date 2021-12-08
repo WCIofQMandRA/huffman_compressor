@@ -7,18 +7,19 @@
 
 #include <iostream>
 #include <mutex>
+#include <utility>
 
 namespace hmcmpsr
 {
 std::mutex adv_ostream_mutex;
-std::ostream *adv_ostream;
+std::pair<std::ostream*,bool> adv_ostream;
 
-void print_advancement(std::ostream &os)
+void print_advancement(std::ostream &os,bool human_readable)
 {
-    if(adv_ostream==nullptr)
+    if(adv_ostream.first==nullptr)
     {
         std::unique_lock _(adv_ostream_mutex);
-        adv_ostream=&os;
+        adv_ostream={&os,human_readable};
     }
 }
 }

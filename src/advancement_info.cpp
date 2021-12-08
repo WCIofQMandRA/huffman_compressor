@@ -6,34 +6,40 @@
 // License, see the file “LICENSE” for detail.
 
 #include <signal.h>
+#include <unistd.h>
 #include <chrono>
 #include <nowide/iostream.hpp>
 #include "exit.hpp"
 #include <hmcmpsr/advancement.hpp>
 
 static std::chrono::system_clock::time_point last_int_time;
+static bool is_interactive_stdin;
 
 void keyboardint_handler(int)
 {
-    using namespace std::chrono_literals;
-    auto now_time=std::chrono::system_clock::now();
-    if(now_time-last_int_time<=500ms)
+    if(is_interactive_stdin)
     {
-        nowide::cerr<<"退出程序？(y/n)   "<<std::flush;
-        while(true)
+        using namespace std::chrono_literals;
+        auto now_time=std::chrono::system_clock::now();
+        if(now_time-last_int_time<=500ms)
         {
-            char ch=getchar();
-            if(ch=='y'||ch=='Y')throw exit_type{3};
-            else if(ch=='n'||ch=='N')return;
+            nowide::cerr<<"退出程序？(y/n)   "<<std::flush;
+            while(true)
+            {
+                int ch=getchar();
+                if(ch=='y'||ch=='Y')throw exit_type{3};
+                else if(ch=='n'||ch=='N')return;
+            }
         }
+        last_int_time=now_time;
+        nowide::cerr<<"若要退出，请在0.5s内按两次Ctrl-C。"<<std::endl;
     }
-    last_int_time=now_time;
-    nowide::cerr<<"若要退出，请在0.5s内按两次Ctrl-C。"<<std::endl;
-    hmcmpsr::print_advancement(nowide::clog);
+    hmcmpsr::print_advancement(nowide::clog,is_interactive_stdin);
 }
 
 //改变SIGINT的响应函数，在收到SIGINT时输出压缩/解压进度信息
 void catch_keyboardint()
 {
+    is_interactive_stdin=isatty(fileno(stdin));
     signal(SIGINT,keyboardint_handler);
 }

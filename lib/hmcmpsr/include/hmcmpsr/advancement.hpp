@@ -16,7 +16,7 @@
 
 namespace hmcmpsr
 {
-void HMCMPSR_API print_advancement(std::ostream&);
+void HMCMPSR_API print_advancement(std::ostream&,bool human_readable=true);
 }
 
 #undef HMCMPSR_API

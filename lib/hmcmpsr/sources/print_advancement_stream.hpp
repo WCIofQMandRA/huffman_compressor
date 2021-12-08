@@ -7,9 +7,10 @@
 
 #include <iosfwd>
 #include <mutex>
+#include <utility>
 
 namespace hmcmpsr
 {
 extern std::mutex adv_ostream_mutex;
-extern std::ostream *adv_ostream;
+extern std::pair<std::ostream*,bool> adv_ostream;
 }

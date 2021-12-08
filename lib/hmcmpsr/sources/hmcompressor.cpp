@@ -134,26 +134,35 @@ void single_cmpsr::compress(const std::filesystem::path &compressed_file_path,bo
         auto ogb=genbitsaver::construct(m->nbranches);
         m->tree->encode(*ogb,*icus,data_block_length*8/m->culen);
         ogb->save(ofs);
-        if(adv_ostream!=nullptr)
+        if(adv_ostream.first!=nullptr)
         {
             if(adv_ostream_mutex.try_lock())
             {
-                double advance_rate=double(i+1)/n_data_blocks;
-                auto time_duration=ck::system_clock::now()-start_time;
-                auto second_cost=ck::duration_cast<ck::seconds>(time_duration).count();
-                decltype(second_cost) second_left=second_cost/advance_rate-second_cost;
-                std::ostringstream sout;
-                sout<<std::setprecision(2)<<std::fixed;
-                sout<<"正在压缩          "<<i+1<<"/"<<n_data_blocks
-                    <<"("<<100.0*advance_rate<<"%)";
-                sout<<"\n已耗时 "<<std::setfill('0')<<std::setw(2)<<second_cost/3600
-                    <<":"<<std::setw(2)<<second_cost/60%60
-                    <<":"<<std::setw(2)<<second_cost%60;
-                sout<<"    剩余 "<<std::setfill('0')<<std::setw(2)<<second_left/3600
-                    <<":"<<std::setw(2)<<second_left/60%60
-                    <<":"<<std::setw(2)<<second_left%60;
-                *adv_ostream<<sout.str()<<std::endl;
-                adv_ostream=nullptr;
+                if(adv_ostream.second)
+                {
+                    double advance_rate=double(i+1)/n_data_blocks;
+                    auto time_duration=ck::system_clock::now()-start_time;
+                    auto second_cost=ck::duration_cast<ck::seconds>(time_duration).count();
+                    decltype(second_cost) second_left=second_cost/advance_rate-second_cost;
+                    std::ostringstream sout;
+                    sout<<std::setprecision(2)<<std::fixed;
+                    sout<<"正在压缩          "<<i+1<<"/"<<n_data_blocks
+                        <<"("<<100.0*advance_rate<<"%)";
+                    sout<<"\n已耗时 "<<std::setfill('0')<<std::setw(2)<<second_cost/3600
+                        <<":"<<std::setw(2)<<second_cost/60%60
+                        <<":"<<std::setw(2)<<second_cost%60;
+                    sout<<"    剩余 "<<std::setfill('0')<<std::setw(2)<<second_left/3600
+                        <<":"<<std::setw(2)<<second_left/60%60
+                        <<":"<<std::setw(2)<<second_left%60;
+                    *adv_ostream.first<<sout.str()<<std::endl;
+                }
+                else
+                {
+                    auto time_duration=ck::system_clock::now()-start_time;
+                    auto millisecond_cost=ck::duration_cast<ck::milliseconds>(time_duration).count();
+                    *adv_ostream.first<<"cm "<<i+1<<" "<<n_data_blocks<<" "<<millisecond_cost<<std::endl;
+                }
+                adv_ostream.first=nullptr;
                 adv_ostream_mutex.unlock();
             }
         }
@@ -282,26 +291,35 @@ void single_dcmpsr::decompress(const std::filesystem::path &uncompressed_file_pa
         auto igb=genbitloader::construct(m->nbranches);
         igb->load(m->ifs);
         m->tree->decode(*ocus,*igb);
-        if(adv_ostream!=nullptr)
+        if(adv_ostream.first!=nullptr)
         {
             if(adv_ostream_mutex.try_lock())
             {
-                double advance_rate=double(i+1)/m->n_data_blocks;
-                auto time_duration=ck::system_clock::now()-start_time;
-                auto second_cost=ck::duration_cast<ck::seconds>(time_duration).count();
-                decltype(second_cost) second_left=second_cost/advance_rate-second_cost;
-                std::ostringstream sout;
-                sout<<std::setprecision(2)<<std::fixed;
-                sout<<"正在提取          "<<i+1<<"/"<<m->n_data_blocks
-                    <<"("<<100.0*advance_rate<<"%)";
-                sout<<"\n已耗时 "<<std::setfill('0')<<std::setw(2)<<second_cost/3600
-                    <<":"<<std::setw(2)<<second_cost/60%60
-                    <<":"<<std::setw(2)<<second_cost%60;
-                sout<<"    剩余 "<<std::setfill('0')<<std::setw(2)<<second_left/3600
-                    <<":"<<std::setw(2)<<second_left/60%60
-                    <<":"<<std::setw(2)<<second_left%60;
-                *adv_ostream<<sout.str()<<std::endl;
-                adv_ostream=nullptr;
+                if(adv_ostream.second)
+                {
+                    double advance_rate=double(i+1)/m->n_data_blocks;
+                    auto time_duration=ck::system_clock::now()-start_time;
+                    auto second_cost=ck::duration_cast<ck::seconds>(time_duration).count();
+                    decltype(second_cost) second_left=second_cost/advance_rate-second_cost;
+                    std::ostringstream sout;
+                    sout<<std::setprecision(2)<<std::fixed;
+                    sout<<"正在提取          "<<i+1<<"/"<<m->n_data_blocks
+                        <<"("<<100.0*advance_rate<<"%)";
+                    sout<<"\n已耗时 "<<std::setfill('0')<<std::setw(2)<<second_cost/3600
+                        <<":"<<std::setw(2)<<second_cost/60%60
+                        <<":"<<std::setw(2)<<second_cost%60;
+                    sout<<"    剩余 "<<std::setfill('0')<<std::setw(2)<<second_left/3600
+                        <<":"<<std::setw(2)<<second_left/60%60
+                        <<":"<<std::setw(2)<<second_left%60;
+                    *adv_ostream.first<<sout.str()<<std::endl;
+                }
+                else
+                {
+                    auto time_duration=ck::system_clock::now()-start_time;
+                    auto millisecond_cost=ck::duration_cast<ck::milliseconds>(time_duration).count();
+                    *adv_ostream.first<<"ex "<<i+1<<" "<<m->n_data_blocks<<" "<<millisecond_cost<<std::endl;
+                }
+                adv_ostream.first=nullptr;
                 adv_ostream_mutex.unlock();
             }
         }
