@@ -57,7 +57,7 @@ huffman_compressor -iTx example.txt.hmz
 
 ### 查看处理进度
 
-当程序收到 `SIGINT` 信号（一般是按`Ctrl+C`）时，会向标准错误流输出压缩/解压的处理进度。但连续收到两次`SIGINT`信号会终止程序。
+当程序收到 `SIGINT` 信号（一般是按`Ctrl+C`）时，会向标准错误流输出压缩/解压的处理进度。对于交互式的stdin，连续收到两次`SIGINT`信号会终止程序。
 
 ## 功能
 
@@ -65,6 +65,7 @@ huffman_compressor -iTx example.txt.hmz
 - [x] 所有基本要求，包括但不限于：
   - 每次运行程序时，用户可指定 只压缩/只解压缩 指定路径的文件；
   - 压缩时不需要指定解压文件的目标路径，解压时不需要指定压缩前原文件的路径，压缩后的文件可以换到另一个位置再做解压缩。
+  - 不使用 STL 容器。
 - [x] 指定符号单元大小（0.5/1/1.5/2/2.5/3/3.5/4字节）。
 - [x] 指定多元 Huffman 压缩（2~16叉树）。
 
@@ -76,6 +77,7 @@ huffman_compressor -iTx example.txt.hmz
 - [x] 命令行界面。 
 
 其他特色：
+- [x] 完整地实现`std::map`的接口，实现`std::vector`、`std::queue`、`std::priority_queue`的大部分接口。
 - [x] 只要文件系统支持并且储存空间足够，支持任意大小的文件。
 - [x] 将 Huffman 压缩的功能封装在 hmcmpsr 库中。
 - [x] 用高精度整数运算处理非 $2^n$-叉 Huffman 树。
