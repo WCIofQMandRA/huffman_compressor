@@ -59,7 +59,7 @@ huffman_compressor -iTx example.txt.hmz
 
 当程序收到 `SIGINT` 信号（一般是按`Ctrl+C`）时，会向标准错误流输出压缩/解压的处理进度。对于交互式的stdin，连续收到两次`SIGINT`信号会终止程序。
 
-**注意：在Windows上，累积按两次`Ctrl+C`就会终止程序，并且程序不会收到第二次按`Ctrl+C`发出的`SIGINT`信号。这是Windows控制台的问题，暂时无法解决。** ~~这充分体现了 Linux 的优越性。~~
+**注意：在Windows上，累积按两次`Ctrl+C`就会终止程序，并且程序不会收到第二次按`Ctrl+C`发出的`SIGINT`信号。这是Windows控制台的问题，暂时无法解决。** 这充分体现了 Linux 的优越性。
 
 ## 功能
 
@@ -95,4 +95,3 @@ BSD 3-Clause License
 ### 与 hmcmpsr 库的关系
 
 Hmcmpsr 库与本软件（Huffman 压缩器）同时编写，并遵循相同的许可证。Hmcmpsr 库既可以被视为本软件的一部分，也可以被分离出来单独使用和分发。目录`lib/hmcmpsr/`完整地包含了 hmcmpsr 库的组件。
-
