@@ -11,9 +11,9 @@
 #include <iosfwd>
 
 #ifdef HMCMPSR_DLLEXPORT
-#   define HMCMPSR_API __declspec(__dllexport__)
+#   define HMCMPSR_API __declspec(dllexport)
 #else
-#   define HMCMPSR_API
+#	define HMCMPSR_API
 #endif
 
 namespace hmcmpsr

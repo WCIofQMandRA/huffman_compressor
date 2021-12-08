@@ -12,6 +12,7 @@
 #   include <gmp.h>
 #endif
 #include <stdexcept>
+#include <string>
 #include <iostream>
 #include <cstring>
 #include "change_endian.hpp"

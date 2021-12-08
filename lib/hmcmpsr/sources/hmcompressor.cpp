@@ -15,6 +15,7 @@
 #include "change_endian.hpp"
 #include "print_advancement_stream.hpp"
 #include <chrono>
+#include <sstream>
 
 constexpr uint32_t hmz_identifier=2494000689;
 constexpr uint32_t hmz_version=0;

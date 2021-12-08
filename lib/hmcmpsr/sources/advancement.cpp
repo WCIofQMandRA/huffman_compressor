@@ -8,6 +8,7 @@
 #include <iostream>
 #include <mutex>
 #include <utility>
+#include <hmcmpsr/advancement.hpp>
 
 namespace hmcmpsr
 {

@@ -104,7 +104,14 @@ int main(int argc,char **argv)
 	}
 	catch(const std::exception& e)
 	{
-		nowide::cerr<<"遇到异常 `"<<typeid(e).name()<<"'\nwhat()= "<< e.what()<<'\n';
+		//由于在GCC上获取人类可读的类型名比较麻烦，所以干脆全都用重整名。
+		nowide::cerr<<"遇到异常 `"<<typeid(e).
+#ifdef _MSC_VER
+		raw_name()
+#else
+		name()
+#endif
+		<<"'\nwhat()= "<< e.what()<<'\n';
 		return 2;
 	}
 }

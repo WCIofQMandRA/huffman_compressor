@@ -6,7 +6,11 @@
 // License, see the file “LICENSE” for detail.
 
 #include <signal.h>
-#include <unistd.h>
+#ifdef _WIN32
+#	include <io.h>
+#else
+#	include <unistd.h>
+#endif
 #include <chrono>
 #include <nowide/iostream.hpp>
 #include "exit.hpp"

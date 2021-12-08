@@ -24,7 +24,7 @@ add_library(hmcmpsr SHARED ${HMCMPSR_SRC})
 target_include_directories(hmcmpsr PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-	target_compile_definitions(hmcpsr PRIVATE HMCMPSR_DLLEXPORT)
+	target_compile_definitions(hmcmpsr PRIVATE HMCMPSR_DLLEXPORT)
 endif()
 
 if(CHECK_BIG_ENDIAN)
