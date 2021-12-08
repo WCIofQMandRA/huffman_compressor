@@ -159,6 +159,8 @@ void genbitloader_g::load(std::istream &is)
     {
         mp_limb_t x;
         is.read(reinterpret_cast<char*>(&x),sizeof(x));
+        if(!is)
+            throw std::runtime_error("genbitloader_g::load: Incomplete input stream.");
         write_buf[i]=ched(x);
     }
     if(buf_sizef<buf_sizec)
@@ -264,6 +266,8 @@ void genbitloader_2n::load(std::istream &is)
     compressed_bytes=ched(compressed_bytes);
     m_buffer.resize(compressed_bytes);
     is.read(reinterpret_cast<char*>(m_buffer.data()),m_buffer.size());
+    if(!is)
+        throw std::runtime_error("genbitloader_2n::load: Incomplete input stream.");
     input_iterator=m_buffer.begin();
     first_char=0,n_bits_left=0;
 }
