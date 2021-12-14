@@ -30,7 +30,7 @@ cd build-withstl
 make -j4
 cd ..
 
-rm -f *.new *.hmz
+rm -f data/*.new data/*.hmz
 
 echo "----------------------------------------------------"
 echo "1. NO_STL_CONTAINER=ON"
@@ -53,7 +53,7 @@ do
 	sha1sum data/test$n data/test$n.new
 done
 
-rm -f *.new *.hmz
+rm -f data/*.new data/*.hmz
 
 echo "----------------------------------------------------"
 echo "2. NO_STL_CONTAINER=OFF"
@@ -84,7 +84,7 @@ do
 	build-withstl/output/bin/huffman_compressor -iTx data/test$n.hmz > tree/test$n-basic.txt
 done
 
-rm -f *.new *.hmz
+rm -f data/*.new data/*.hmz
 
 echo -n "测试结束时间:"
 date --utc +"%F %T UTC"
