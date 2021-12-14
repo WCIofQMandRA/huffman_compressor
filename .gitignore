@@ -4,5 +4,7 @@ build*/
 git_token
 .vscode/
 release/
-test/build/
-test/data/test*
+test/build*/
+test/tree/
+test/data
+test/*.log
