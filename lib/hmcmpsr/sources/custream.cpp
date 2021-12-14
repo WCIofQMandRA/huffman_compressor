@@ -48,7 +48,9 @@ icustream& icustream_g::operator>>(uint64_t &ch)
             j=m_is.get();
             if(j>=256)
             {
-                if(is_first_get)m_ok=false;//第一次get就失败才返回错误
+                //第一次get就失败并且缓冲区中没有未读入的bits才返回错误
+                if(is_first_get&&current_char_bits==0)
+                    m_ok=false;
                 j=0;
             }
             is_first_get=false;
