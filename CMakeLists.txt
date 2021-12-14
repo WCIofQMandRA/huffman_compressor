@@ -7,7 +7,7 @@
 
 cmake_minimum_required(VERSION 3.4)
 include(TestBigEndian)
-project(huffman_compressor VERSION 1.0.0.0)
+project(huffman_compressor VERSION 1.0.1)
 set(CMAKE_CXX_STANDARD 17)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")

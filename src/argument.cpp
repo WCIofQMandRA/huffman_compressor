@@ -67,7 +67,7 @@ R"(基本用法:
 输出选项:
   -t, --show-tree                   输出Huffman树。
   -f, --show-frequency              输出字符频率。
-                                    由于压缩时先统计字符频率再建树，可用使用
+                                    由于压缩时先统计字符频率再建树，可以使用
                                     -fT输出字符频率和Huffman树然后退出。
   -i, --show-info                   输出压缩包的基本信息（文件头）。
 
@@ -80,7 +80,7 @@ R"(基本用法:
 static void version()
 {
     //TODO（不影响功能）: 从config文件读入版本
-    nowide::cout<<"Huffman树压缩器   Version 1.0.0.0\n";
+    nowide::cout<<"Huffman树压缩器   Version 1.0.1\n";
     nowide::cout<<"Copyright (C) 2021-2022 张子辰\n";
     nowide::cout<<"本软件是自由软件，您可以根据 BSD 3-Clause "
                   "License 的条款使用和分发本软件。\n详细信息请使用 “"

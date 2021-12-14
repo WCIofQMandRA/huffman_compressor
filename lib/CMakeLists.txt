@@ -5,7 +5,7 @@
 # distrubute it under the term of the BSD 3-Clause
 # License, see the file “LICENSE” for detail.
 
-add_subdirectory(hmcmpsr)
+add_subdirectory(hmcmpsr VERSION 1.0.1)
 
 if(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Linux")
 	set_target_properties(hmcmpsr PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE)
