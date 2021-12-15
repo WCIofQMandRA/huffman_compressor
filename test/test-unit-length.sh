@@ -54,10 +54,15 @@ do
 	echo ""
 	echo ""
 	echo "压缩包信息和Huffman树"
-	for n in "01" "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20" "21" "22" "23" "24"
+	for n in "01" "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12"
 	do
 		echo "huffman_compressor -iTx data/test$m.hmz-$n"
 		build-withstl/output/bin/huffman_compressor -iTx data/test$m.hmz-$n > tree/test$m-U$n.txt
+	done
+	for n in "13" "14" "15" "16" "17" "18" "19" "20" "21" "22" "23" "24"
+	do
+		echo "huffman_compressor -Ix data/test$m.hmz-$n"
+		build-withstl/output/bin/huffman_compressor -Ix data/test$m.hmz-$n > tree/test$m-U$n.txt
 	done
 	
 	rm -f data/test$m-* data/test$m.hmz-*
