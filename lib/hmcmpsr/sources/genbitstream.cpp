@@ -23,7 +23,7 @@ namespace
 constexpr unsigned log_2(unsigned x)
 {
     unsigned y=0;
-    if(x>=256)y+=4,x>>=8;
+    if(x>=256)y+=8,x>>=8;
     if(x>=16)y+=4,x>>=4;
     if(x>=4)y+=2,x>>=2;
     if(x>=2)y+=1;
