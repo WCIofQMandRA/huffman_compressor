@@ -27,7 +27,7 @@ make -j4
 cd ..
 
 #为了节约时间只测试部分用例
-for m in 01 06
+for m in 01 03
 do
 	rm -f data/test$m-* data/test$m.hmz-*
 	echo "----------------------------------------------------"
