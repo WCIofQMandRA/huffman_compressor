@@ -56,7 +56,7 @@ std::unique_ptr<genbitloader> genbitloader::construct(unsigned radix)
 genbitsaver_g::genbitsaver_g(unsigned radix):m_radix(radix)
 {
     if(radix>256)
-        throw std::out_of_range("In hmcpsr::genobitstream_n2::genobitstream_n2, the radix is greater than 256.");
+        throw std::out_of_range("In hmcpsr::genbitsaver_g::genbitsaver_g, the radix is greater than 256.");
     m_buffer=new __mpz_struct;
     m_pow_radix_length=new __mpz_struct;
     mpz_init_set_ui(M_BUFFER,0);
@@ -80,7 +80,7 @@ void genbitsaver_g::putbit(unsigned bit)
     if(bit)
     {
         if(bit>=m_radix)
-            throw std::out_of_range("In hmcpsr::ogenbitstream_n2::putbit, bit[which is"
+            throw std::out_of_range("In hmcpsr::genbitsaver_g::putbit, bit[which is"
             +std::to_string(bit)+"] >= m_radix[which is "+std::to_string(m_radix)+"].");
         mpz_t tmp;
         mpz_init(tmp);
@@ -114,7 +114,7 @@ void genbitsaver_g::save(std::ostream &os)
 genbitloader_g::genbitloader_g(unsigned radix):m_radix(radix)
 {
     if(radix>256)
-        throw std::out_of_range("In hmcpsr::igenbitstream_n2::igenbitstream_n2, the radix is greater than 256.");
+        throw std::out_of_range("In hmcpsr::genbitloader_g::genbitloader_g, the radix is greater than 256.");
     m_buffer=new __mpz_struct;
     mpz_init(M_BUFFER);
 }
@@ -186,15 +186,15 @@ genbitloader_g::operator bool()
 genbitsaver_2n::genbitsaver_2n(unsigned radix):m_radix(radix),log2_radix(log_2(radix))
 {
     if(radix!=(radix&-radix))
-        throw std::out_of_range("hmcpsr::genobitstream_2::genobitstream_2, radix is not 2^n.");
+        throw std::out_of_range("hmcpsr::genbitsaver_2n::genbitsaver_2n, radix is not 2^n.");
     if(radix>256)
-        throw std::out_of_range("In hmcpsr::genobitstream_2::genobitstream_2, the radix is greater than 256.");
+        throw std::out_of_range("In hmcpsr::genbitsaver_2n::genbitsaver_2n, the radix is greater than 256.");
 }
 
 void genbitsaver_2n::putbit(unsigned bit)
 {
     if(bit>=m_radix)
-        throw std::out_of_range("In hmcpsr::ogenbitstream_2::putbit, bit[which is"
+        throw std::out_of_range("In hmcpsr::genbitsaver_2n::putbit, bit[which is"
         +std::to_string(bit)+"] >= m_radix[which is "+std::to_string(m_radix)+"].");
 
     if(n_bits_left+log2_radix<=8)
@@ -228,9 +228,9 @@ void genbitsaver_2n::save(std::ostream &os)
 genbitloader_2n::genbitloader_2n(unsigned radix):m_radix(radix),log2_radix(log_2(radix))
 {
     if(radix!=(radix&-radix))
-        throw std::out_of_range("hmcpsr::igenbitstream_2::igenbitstream_2, radix is not 2^n.");
+        throw std::out_of_range("hmcpsr::genbitloader_2n::genbitloader_2n, radix is not 2^n.");
     if(radix>256)
-        throw std::out_of_range("In hmcpsr::igenbitstream_2::igenbitstream_2, the radix is greater than 256.");
+        throw std::out_of_range("In hmcpsr::genbitloader_2n::genbitloader_2n, the radix is greater than 256.");
 }
 
 genbitloader_2n::operator bool()

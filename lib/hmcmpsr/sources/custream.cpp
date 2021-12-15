@@ -23,7 +23,11 @@ std::unique_ptr<ocustream> ocustream::construct(unsigned culen,std::ostream &os)
     else return std::make_unique<ocustream_g>(culen,os);
 }
 
-icustream_g::icustream_g(unsigned culen,std::istream &is):m_culen(culen),m_mask((1ull<<culen)-1),m_is(is){}
+icustream_g::icustream_g(unsigned culen,std::istream &is):m_culen(culen),m_mask((1ull<<culen)-1),m_is(is)
+{
+    if(culen>64)
+        throw std::out_of_range("In hmcpsr::icustream_g::icustream_g: culen>64");
+}
 
 icustream& icustream_g::operator>>(uint64_t &ch)
 {
@@ -87,7 +91,11 @@ void icustream_g::clear()
     m_ok=true;
 }
 
-ocustream_g::ocustream_g(unsigned culen,std::ostream &os):m_culen(culen),m_os(os){}
+ocustream_g::ocustream_g(unsigned culen,std::ostream &os):m_culen(culen),m_os(os)
+{
+    if(culen>64)
+        throw std::out_of_range("In hmcpsr::ocustream_g::ocustream_g: culen>64");
+}
 
 ocustream& ocustream_g::operator<<(uint64_t ch)
 {

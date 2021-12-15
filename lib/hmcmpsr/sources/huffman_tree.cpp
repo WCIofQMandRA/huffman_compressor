@@ -58,6 +58,8 @@ huffman_tree_g::~huffman_tree_g()
 
 void huffman_tree_g::build_tree(const char_frequency_t &char_frequency,unsigned n_branches)
 {
+    if(n_branches>256)
+        throw std::out_of_range("In hmcmpsr::huffman_tree_g::build_tree: n_branches>256.");
     using qtype=std::tuple<uint64_t,uint32_t,huffman_tree_node*>;
     m->code_unit_length=char_frequency.get_code_unit_length();
     //weight,deepth,node
