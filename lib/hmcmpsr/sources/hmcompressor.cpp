@@ -209,6 +209,7 @@ void single_dcmpsr::open(const std::filesystem::path &compressed_file_path)
     m->n_data_blocks=ched(m->n_data_blocks);
     m->nbranches=m->ifs.get();
     m->culen=m->ifs.get();
+    if(m->nbranches==0)m->nbranches=256u;
     if(!m->ifs)
     {
         m->ifs.close();
