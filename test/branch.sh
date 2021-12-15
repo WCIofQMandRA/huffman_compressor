@@ -33,7 +33,7 @@ do
 	echo "----------------------------------------------------"
 	echo "test$m"
 	echo "压缩"
-	for n in "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20" "21" "22" "23" "24" "25"
+	for n in "002" "003" "004" "005" "006" "007" "008" "009" "010" "011" "012" "013" "014" "015" "016" "017" "018" "019" "020" "021" "127" "128" "255" "256"
 	do
 		echo "time huffman_compressor -c data/test$m -B $n -o data/test$m.hmz-$n"
 		time build-withstl/output/bin/huffman_compressor -c data/test$m --branch $n -o data/test$m.hmz-$n
@@ -42,7 +42,7 @@ do
 	echo ""
 	echo ""
 	echo "解压"
-	for n in "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20" "21" "22" "23" "24" "25"
+	for n in "002" "003" "004" "005" "006" "007" "008" "009" "010" "011" "012" "013" "014" "015" "016" "017" "018" "019" "020" "021" "127" "128" "255" "256"
 	do
 		echo "time huffman_compressor -x data/test$m.hmz-$n -o data/test$m-$n"
 		time build-withstl/output/bin/huffman_compressor -x data/test$m.hmz-$n -o data/test$m-$n
@@ -57,7 +57,7 @@ do
 	echo ""
 	echo ""
 	echo "压缩包信息和Huffman树"
-	for n in "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20" "21" "22" "23" "24" "25"
+	for n in "002" "003" "004" "005" "006" "007" "008" "009" "010" "011" "012" "013" "014" "015" "016" "017" "018" "019" "020" "021" "127" "128" "255" "256"
 	do
 		echo "huffman_compressor -iTx data/test$m.hmz-$n"
 		build-withstl/output/bin/huffman_compressor -iTx data/test$m.hmz-$n > tree/test$m-B$n.txt
