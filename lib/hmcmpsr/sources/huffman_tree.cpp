@@ -210,6 +210,7 @@ void huffman_tree_g::decode(ocustream &os,genbitloader &is)
 void huffman_tree_g::load_tree(std::istream &is)
 {
     unsigned n_branches=(uint8_t)is.get();
+    if(n_branches==0)n_branches=256;
     m->code_unit_length=(uint8_t)is.get();
     VECNS::vector<huffman_tree_node*> leaves;
     if(m->root)
