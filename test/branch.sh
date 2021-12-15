@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#test-unit-length.sh: 测试不同长度的编码单元
+#branch.sh: 测试不同分叉数的Huffman树
 #Copyright 2021-2022 张子辰
 #This file is part of the Huffman压缩器.
 # This software is free software, you can use and 
@@ -8,9 +8,12 @@
 # License, see the file “LICENSE” for detail.
 
 echo "===================================================="
-echo "test-unit-length"
+echo "branch"
 echo "系统信息:"
 uname -svrp
+echo "GMP版本:"
+random_filename=`shuf -i 10000000-99999999 -n 1`
+(echo "I2luY2x1ZGUgPHN0ZGlvLmg+CiNpbmNsdWRlIDxnbXAuaD4KCmludCBtYWluKCkKewoJcHJpbnRmKCJHTVAgdiVkLiVkLiVkLCBjb21waWxlZCBieSAiIF9fR01QX0NDICIgd2l0aCBmbGFncyBcIiIgX19HTVBfQ0ZMQUdTICJcIlxuIiwKCQlfX0dOVV9NUF9WRVJTSU9OLF9fR05VX01QX1ZFUlNJT05fTUlOT1IsX19HTlVfTVBfVkVSU0lPTl9QQVRDSExFVkVMKTsKCXJldHVybiAwOwp9Cg==" | base64 -d | gcc -x c - -o gmp-version$random_filename) && ./gmp-version$random_filename && rm gmp-version$random_filename
 echo -n "测试开始时间:"
 date --utc +"%F %T UTC"
 echo "===================================================="
@@ -30,16 +33,16 @@ do
 	echo "----------------------------------------------------"
 	echo "test$m"
 	echo "压缩"
-	for n in "01" "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20" "21" "22" "23" "24"
+	for n in "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20" "21" "22" "23" "24" "25"
 	do
-		echo "time huffman_compressor -c data/test$m -U $n -o data/test$m.hmz-$n"
-		time build-withstl/output/bin/huffman_compressor -c data/test$m --unit-length $n -o data/test$m.hmz-$n
+		echo "time huffman_compressor -c data/test$m -B $n -o data/test$m.hmz-$n"
+		time build-withstl/output/bin/huffman_compressor -c data/test$m --branch $n -o data/test$m.hmz-$n
 	done
 	
 	echo ""
 	echo ""
 	echo "解压"
-	for n in "01" "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20" "21" "22" "23" "24"
+	for n in "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20" "21" "22" "23" "24" "25"
 	do
 		echo "time huffman_compressor -x data/test$m.hmz-$n -o data/test$m-$n"
 		time build-withstl/output/bin/huffman_compressor -x data/test$m.hmz-$n -o data/test$m-$n
@@ -54,10 +57,10 @@ do
 	echo ""
 	echo ""
 	echo "压缩包信息和Huffman树"
-	for n in "01" "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20" "21" "22" "23" "24"
+	for n in "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20" "21" "22" "23" "24" "25"
 	do
 		echo "huffman_compressor -iTx data/test$m.hmz-$n"
-		build-withstl/output/bin/huffman_compressor -iTx data/test$m.hmz-$n > tree/test$m-U$n.txt
+		build-withstl/output/bin/huffman_compressor -iTx data/test$m.hmz-$n > tree/test$m-B$n.txt
 	done
 	
 	rm -f data/test$m-* data/test$m.hmz-*
