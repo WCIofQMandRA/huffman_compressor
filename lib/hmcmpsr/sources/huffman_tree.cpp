@@ -114,9 +114,10 @@ void huffman_tree_impl::get_encoding(huffman_tree_node *node)
     else
     {
         current_encoding.push_back(0);
-        for(uint8_t i=0;i<node->child.size();++i)
+        //i的类型不能是uint8_t，否则当size==256时，循环无法终止.
+        for(unsigned i=0;i<node->child.size();++i)
         {
-            *--current_encoding.end()=i;
+            *--current_encoding.end()=static_cast<uint8_t>(i);
             get_encoding(node->child[i]);
         }
         current_encoding.pop_back();
